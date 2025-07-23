@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  config:
+    import: optional:file:.env[.properties]  # .env 파일 읽기
+  application:
+    name: musinsa-shop
+
+  # Database Configuration
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3300/musinsa_shop?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    # 공개키 요청을 허용 : allowPublicKeyRetrieval=true
+    # url: jdbc:mysql://localhost:3300/musinsa_shop?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME} # MUSINSSAK / root
+    password: ${DB_PASSWORD}
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate # none : init.sql 테이블 수동 생성, update : 자동으로 테이블 생성/수정, validate : init.sql로 만든 테이블과 맞는지만 확인하고, insert 가능
+    show-sql: true # 콘솔에 SQL 출력됨
+    properties:
+      hibernate:
+        format_sql: true # SQL 예쁘게 출력
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  # Redis Configuration
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: musinsa-shop-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# Swagger Configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.example.musinsashop: DEBUG
