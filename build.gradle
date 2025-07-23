@@ -47,6 +47,7 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.assertj:assertj-core:3.24.2' // 단언용
 
     // .env
     implementation 'me.paulschwarz:spring-dotenv:3.0.0'
@@ -54,4 +55,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    systemProperty "file.encoding", "UTF-8" // 테스트 실행 시 한글 인코딩 문제 해결
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8" // 자바 컴파일 시 한글 소스 인코딩
 }
