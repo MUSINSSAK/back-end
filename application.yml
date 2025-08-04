@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  flyway: # Flyway 활성화
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
   config:
     import: optional:file:.env[.properties]  # .env 파일 읽기
   application:
@@ -19,7 +23,7 @@ spring:
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: validate # none : init.sql 테이블 수동 생성, update : 자동으로 테이블 생성/수정, validate : init.sql로 만든 테이블과 맞는지만 확인하고, insert 가능
+      ddl-auto: validate # Flyway가 생성한 테이블 구조가 맞는지만 검사, none : init.sql 테이블 수동 생성, update : 자동으로 테이블 생성/수정, validate : init.sql로 만든 테이블과 맞는지만 확인하고, insert 가능
     show-sql: true # 콘솔에 SQL 출력됨
     properties:
       hibernate:
