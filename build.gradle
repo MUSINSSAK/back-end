@@ -51,6 +51,11 @@ dependencies {
 
     // .env
     implementation 'me.paulschwarz:spring-dotenv:3.0.0'
+
+    // init.sql -> Flyway 사용하기 위해서
+    implementation 'org.flywaydb:flyway-mysql' // MySQL 지원 확장 추가
+    // implementation 'org.flywaydb:flyway-core:9.22.3' // 또는 최신 버전
+    // implementation 'org.flywaydb:flyway-core'
 }
 
 tasks.named('test') {
