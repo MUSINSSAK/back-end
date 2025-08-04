@@ -19,7 +19,7 @@ services:
       - "3300:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql # 개발용 DB 생성 -> Flyway 사용
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   redis:
