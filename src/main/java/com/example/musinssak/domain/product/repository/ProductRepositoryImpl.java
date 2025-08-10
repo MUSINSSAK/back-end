@@ -71,11 +71,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         if (request.getKeyword() == null || request.getKeyword().isBlank()) {
             throw new IllegalArgumentException("MISSING_KEYWORD");
         }
-        // 포함 검색(대소문자 무시): 상품명 OR 브랜드명 중 하나라도 키워드 포함
-        where.and(
-                p.name.containsIgnoreCase(request.getKeyword())
-                        .or(b.name.containsIgnoreCase(request.getKeyword()))
-        );
+        // 포함 검색(대소문자 무시): 상품명에 키워드 포함
+        where.and(p.name.containsIgnoreCase(request.getKeyword()));
 
         // 공통 필터 적용
         applyCommonFilters(where, request.getCategory(), request.getBrand(), request.getMinPrice(), request.getMaxPrice());
