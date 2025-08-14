@@ -4,6 +4,7 @@ import com.example.musinssak.api.product.dto.ProductListRequest;
 import com.example.musinssak.api.product.dto.ProductMainResponse;
 import com.example.musinssak.api.product.dto.ProductSearchRequest;
 import com.example.musinssak.api.product.dto.ProductSearchResultResponse;
+import com.example.musinssak.common.web.ApiResponse;
 import com.example.musinssak.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,14 @@ public class ProductController {
      * 메인 화면 최신 상품 목록 10개
      */
     @GetMapping("/main")
-    public ResponseEntity<Map<String, Object>> getMainProducts() {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getMainProducts() {
         List<ProductMainResponse> products = productService.getMainProducts();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("code", "SUCCESS");
-        response.put("message", "신규 상품 목록이 성공적으로 조회되었습니다.");
-        response.put("data", Map.of("products", products));
-
-        return ResponseEntity.ok(response);
+        // data 구조는 기존 명세서대로 "products" 키를 유지
+        Map<String, Object> data = Map.of("products", products);
+        return ResponseEntity.ok(
+                ApiResponse.success("신규 상품 목록이 성공적으로 조회되었습니다.", data)
+        );
     }
 
     /**
@@ -44,31 +43,22 @@ public class ProductController {
      * 프론트 : brand=A&brand=B 가정
      */
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchProducts(@ModelAttribute ProductSearchRequest request) {
+    public ResponseEntity<ApiResponse<ProductSearchResultResponse>> searchProducts(@ModelAttribute ProductSearchRequest request) {
         // 상품 목록 + 커서 포함된 응답
-        ProductSearchResultResponse response = productService.searchProducts(request);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("status", 200);
-        result.put("code", "SUCCESS");
-        result.put("message", "상품 검색 결과가 성공적으로 조회되었습니다.");
-        result.put("data", response); // 전체 응답 구조를 담은 객체
-
-        return ResponseEntity.ok(result);
+        ProductSearchResultResponse data = productService.searchProducts(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("상품 검색 결과가 성공적으로 조회되었습니다.", data)
+        );
     }
 
     /**
      * 카테고리 페이지 (검색 x)
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> listByCategory(@ModelAttribute ProductListRequest request) {
-        ProductSearchResultResponse response = productService.listProducts(request);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("status", 200);
-        result.put("code", "SUCCESS");
-        result.put("message", "상품 목록이 성공적으로 조회되었습니다.");
-        result.put("data", response);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<ApiResponse<ProductSearchResultResponse>> listByCategory(@ModelAttribute ProductListRequest request) {
+        ProductSearchResultResponse data = productService.listProducts(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("상품 목록이 성공적으로 조회되었습니다.", data)
+        );
     }
 }
