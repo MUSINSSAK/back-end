@@ -64,6 +64,9 @@ dependencies {
     // 아래 두 줄은 일부 환경에서 APT가 Jakarta 어노테이션을 못 찾는 문제 예방용 (선택적이지만 권장)
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
     annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    // 인증·인가(Security) 기능
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
