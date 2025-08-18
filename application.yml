@@ -35,6 +35,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      # host: redis # 앱도 도커에서 뜬다면 이걸로 (compose 서비스명)
 
   # Kafka Configuration
   kafka:
@@ -56,3 +57,9 @@ logging:
   level:
     root: INFO
     com.example.musinsashop: DEBUG
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET} # 여기에 매우 길고 복잡한 랜덤 시크릿 값을 넣으세요_예:5xZrJc... (Base64 가능)
+  access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}     # 기본 15분
+  refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}  # 기본 14일
