@@ -23,24 +23,6 @@ public enum ErrorCode {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

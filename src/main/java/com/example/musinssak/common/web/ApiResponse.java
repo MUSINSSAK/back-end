@@ -32,7 +32,10 @@ public class ApiResponse<T> {
     }
 
     // ---------- 실패 ----------
-    public static ApiResponse<Void> error(int status, String code, String message) {
+    public static <T> ApiResponse<T> error(int status, String code, String message) {
         return new ApiResponse<>(status, code, null, message);
     }
+//    public static ApiResponse<Void> error(int status, String code, String message) {
+//        return new ApiResponse<>(status, code, null, message);
+//    }
 }
