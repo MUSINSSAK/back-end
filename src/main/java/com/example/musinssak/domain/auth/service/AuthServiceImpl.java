@@ -53,17 +53,21 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD); // 비밀번호 유효성 검사
         }
 
-        String subject = String.valueOf(user.getId()); // 토큰 subject는 불변 식별자 권장
-        // 액세스 토큰 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(subject, Map.of(
+        String userId = String.valueOf(user.getId()); // 토큰 subject는 불변 식별자 권장
+        // Access 토큰만 생성
+        String accessToken = jwtTokenProvider.generateAccessToken(userId, Map.of(
                 "email", user.getEmail(),
                 "nickname", user.getNickname(),
                 "role", "USER"
         ));
+
         // 리프레시 토큰 생성 (클레임 최소화 권장)
-        String refreshToken = jwtTokenProvider.generateRefreshToken(subject);
+        // String refreshToken = jwtTokenProvider.generateRefreshToken(userId);
 
         // 응답 data에 액세스 토큰과 리프레시 토큰 전달
-        return new LoginResponse(accessToken, refreshToken);
+        // return new LoginResponse(accessToken, refreshToken);
+
+        // ❌ 여기서 refreshToken 만들지 않음 (컨트롤러에서 쿠키로 내려줄 것)
+        return new LoginResponse(userId, accessToken); // DTO는 userId + accessToken만
     }
 }
