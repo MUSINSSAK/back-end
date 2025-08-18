@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 4단계: JwtTokenProvider (토큰 생성 유틸)
@@ -46,7 +48,14 @@ public class JwtTokenProvider {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(subject)
-                .addClaims(claims)
+
+                // NPE 방지: claims null이면 빈 맵으로
+                .addClaims(claims != null ? claims : new HashMap<>())
+                // 발급자(issuer) 명시 → 검증에 사용
+                .setIssuer(props.getIssuer())
+                // jti(토큰 고유 식별자) → 추적/회전 시 유용
+                .setId(UUID.randomUUID().toString())
+
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + props.getAccessExpireMs()))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -60,10 +69,28 @@ public class JwtTokenProvider {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(subject)
+
+                // 발급자(issuer) 명시
+                .setIssuer(props.getIssuer())
+                // jti 부여
+                .setId(UUID.randomUUID().toString())
+
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + props.getRefreshExpireMs()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // 편의 오버로드: role만 넘겨 액세스 토큰 만들 때 사용 (컨트롤러/서비스에서 간편)
+    public String createAccessToken(String subject, String role) {
+        Map<String, Object> c = new HashMap<>();
+        if (role != null && !role.isBlank()) c.put("role", role);
+        return generateAccessToken(subject, c);
+    }
+
+    // 편의 오버로드: 이름만 맞추고 싶을 때 사용 (호출부 가독성)
+    public String createRefreshToken(String subject) {
+        return generateRefreshToken(subject);
     }
 
     /**
@@ -75,6 +102,10 @@ public class JwtTokenProvider {
         // 검증 실패 시 JwtException 발생
         return Jwts.parserBuilder()
                 .setSigningKey(key)             // 서명 검증 키
+
+                // 발급자까지 검증(생성 시 setIssuer로 넣은 값과 일치해야 함)
+                .requireIssuer(props.getIssuer())
+
                 .build()
                 .parseClaimsJws(token)          // 토큰 파싱, 실패 시 JwtException
                 .getBody();                     // 성공 시 Claims 반환
@@ -96,4 +127,16 @@ public class JwtTokenProvider {
         return parseClaims(token).getSubject();
     }
 
+    /**
+     * 만료여도 subject(=userId)만 뽑아오고, 위조·형식 오류면 null
+     */
+    public String tryGetSubjectEvenIfExpired(String token) {
+        try { return getSubject(token); }
+        catch (io.jsonwebtoken.ExpiredJwtException e) { return e.getClaims().getSubject(); }
+        catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) { return null; }
+    }
+
+    // 8단계 헬퍼: 컨트롤러에서 쿠키/TTL 세팅 시 사용
+    public String getRefreshCookieName() { return props.getRefreshCookieName(); }
+    public long getRefreshTtlSeconds()   { return props.getRefreshExpireMs() / 1000; }
 }
