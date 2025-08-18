@@ -20,8 +20,14 @@ public class JwtProperties {
     private long accessExpireMs;
     private long refreshExpireMs;
 
+    // 8단계: 리프레시 토큰 저장/재발급
+    private String issuer = "musinsa-shop";
+    private String refreshCookieName = "REFRESH_TOKEN";
+
     // @ConfigurationProperties는 setter 필요
     public void setSecret(String secret) { this.secret = secret; }
     public void setAccessExpireMs(long accessExpireMs) { this.accessExpireMs = accessExpireMs; }
     public void setRefreshExpireMs(long refreshExpireMs) { this.refreshExpireMs = refreshExpireMs; }
+    public void setIssuer(String issuer) { this.issuer = issuer; }
+    public void setRefreshCookieName(String name) { this.refreshCookieName = name; }
 }
