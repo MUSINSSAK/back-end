@@ -71,6 +71,9 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         /* ---------- ② 회원(authenticated) 작업할때만 ---------- */
+                        // 토큰 재발급 (Refresh Token → 새 Access Token 발급)
+                        .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+
                         // 로그아웃
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
 
