@@ -27,9 +27,11 @@ dependencies {
     // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.kafka:spring-kafka'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -67,6 +69,11 @@ dependencies {
 
     // 인증·인가(Security) 기능
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // --- JJWT (토큰 생성/검증) ---
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly   'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly   'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 tasks.named('test') {
