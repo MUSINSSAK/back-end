@@ -9,6 +9,9 @@ public enum ErrorCode {
     // --- 인증(401) : 프론트는 이 코드만 보면 로그인 유도 ---
     AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_REQUIRED", "로그인이 필요합니다."),
 
+    // --- 인가(403) : 로그인은 했으나 권한 부족 ---
+    AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH_FORBIDDEN", "접근 권한이 없습니다."),
+
     // 회원가입 실패 관련
     EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, "EMAIL_DUPLICATED", "이미 사용 중인 이메일입니다."),
     NICKNAME_DUPLICATED(HttpStatus.BAD_REQUEST, "NICKNAME_DUPLICATED", "이미 사용 중인 닉네임입니다."),
