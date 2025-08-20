@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,10 +41,12 @@ public class User {
     @Column(name = "last_password_modified_at")
     private LocalDateTime lastPasswordModifiedAt;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;     // DB에서 기본값 주는 중이면 그대로 매핑만
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     private User(String email, String passwordHash, String nickname) {
