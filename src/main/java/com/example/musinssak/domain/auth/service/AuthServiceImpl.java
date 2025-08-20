@@ -32,9 +32,9 @@ public class AuthServiceImpl implements AuthService {
         if (userService.emailExists(request.getEmail())) {
             throw new BusinessException(ErrorCode.EMAIL_DUPLICATED);
         }
-        if (userService.nicknameExists(request.getNickname())) {
-            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATED);
-        }
+//        if (userService.nicknameExists(request.getNickname())) {
+//            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATED);
+//        }
 
         // 2) 패스워드는 해시로 저장 (BCrypt)
         String hash = passwordEncoder.encode(request.getPassword());

@@ -40,9 +40,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> {})  // CORS 활성화
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트
 
                         /* ---------- ① 모두(permitAll) ---------- */
                         // 회원가입/로그인/비번찾기 3단계
@@ -105,6 +107,9 @@ public class SecurityConfig {
 
                             res.setStatus(code.getHttpStatus().value());       // 401
                             res.setContentType("application/json;charset=UTF-8");
+                            // 캐시 방지 + UTF-8 보장
+                            res.setHeader("Cache-Control", "no-store");
+                            res.setCharacterEncoding("UTF-8");
 
                             var body = ApiResponse.error(
                                     code.getHttpStatus().value(),   // 401
@@ -116,13 +121,16 @@ public class SecurityConfig {
                         })
                         // 추후 관리자 페이지 구현시 : 인가 실패(ROLE 부족 등) → 403
                         .accessDeniedHandler((req, res, e) -> {
-                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);   // 403
+                            var code = ErrorCode.AUTH_FORBIDDEN; // 한 곳(enum)에서 상태/코드/메시지 관리
+                            res.setStatus(code.getHttpStatus().value());   // 403
                             res.setContentType("application/json;charset=UTF-8");
+                            res.setHeader("Cache-Control", "no-store");
+                            res.setCharacterEncoding("UTF-8");
 
                             var body = ApiResponse.error(
-                                    HttpServletResponse.SC_FORBIDDEN,
-                                    "AUTH_403",
-                                    "접근 권한이 없습니다."
+                                    code.getHttpStatus().value(),   // 403
+                                    code.getCode(),                 // "AUTH_FORBIDDEN"
+                                    code.getMessage()               // "접근 권한이 없습니다."
                             );
 
                             new ObjectMapper().writeValue(res.getWriter(), body);
