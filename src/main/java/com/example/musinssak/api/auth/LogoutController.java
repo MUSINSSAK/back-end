@@ -1,4 +1,4 @@
-package com.example.musinssak.api.auth.dto;
+package com.example.musinssak.api.auth;
 
 import com.example.musinssak.common.web.ApiResponse;
 import com.example.musinssak.infra.security.JwtTokenProvider;

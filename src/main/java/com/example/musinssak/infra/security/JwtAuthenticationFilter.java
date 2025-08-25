@@ -6,7 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -28,6 +30,7 @@ import java.util.List;
  *     - 유효하지 않거나 만료/파싱오류면 요청에 AUTH_REQUIRED 표식만 남김
  *  4) 최종 401 JSON 응답은 SecurityConfig의 authenticationEntryPoint가 통일해서 내려줌
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -90,6 +93,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+//                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//                String username = auth.getName(); // 로그인한 유저 이름
+//                log.info("[JWT] auth.getName()={}", username);
 
                 // 유효한 토큰이면 끝. 다음 필터로 진행
                 filterChain.doFilter(request, response);
