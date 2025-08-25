@@ -63,3 +63,9 @@ jwt:
   secret: ${JWT_SECRET} # 여기에 매우 길고 복잡한 랜덤 시크릿 값을 넣으세요_예:5xZrJc... (Base64 가능)
   access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}     # 기본 15분
   refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}  # 기본 14일
+
+# 주소검색 API 설정
+kakao:
+  local:
+    base-url: https://dapi.kakao.com  # 카카오 주소검색 API 기본 URL
+    rest-api-key: ${KAKAO_REST_API_KEY}  # .env에서 REST API 키를 불러옴
