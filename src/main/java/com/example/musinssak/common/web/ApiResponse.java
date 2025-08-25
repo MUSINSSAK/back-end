@@ -31,10 +31,21 @@ public class ApiResponse<T> {
         return new ApiResponse<>(200, "SUCCESS", null, message);
     }
 
+    // 201 + 메시지 (data 없음) : 배송지 추가
+    public static ApiResponse<Void> created(String message) {
+        return new ApiResponse<>(201, "SUCCESS", null, message);
+    }
+
+    // 201 + 메시지 + data (필요할 때)
+    public static <T> ApiResponse<T> created(String message, T data) {
+        return new ApiResponse<>(201, "SUCCESS", data, message);
+    }
+
     // ---------- 실패 ----------
     public static <T> ApiResponse<T> error(int status, String code, String message) {
         return new ApiResponse<>(status, code, null, message);
     }
+
 //    public static ApiResponse<Void> error(int status, String code, String message) {
 //        return new ApiResponse<>(status, code, null, message);
 //    }

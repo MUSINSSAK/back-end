@@ -47,6 +47,7 @@ public class AuthController {
         // LoginResponse tokens = authService.login(request);
         var body = authService.login(request); // userId, accessToken 채워서 반환
         String userId = body.getUserId();
+        log.info("userId={}", userId);
 
         String refresh = jwtTokenProvider.createRefreshToken(userId);
         // String refresh = jwtTokenProvider.generateRefreshToken(userId); // 동일한 의미
