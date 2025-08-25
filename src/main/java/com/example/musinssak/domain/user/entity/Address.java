@@ -64,4 +64,14 @@ public class Address {
     }
 
     public void setDefault(boolean value) { this.isDefault = value; }
+
+    public void update(String label, String recipient, String phone,
+                       String address, String detailAddress, String postalCode) {
+        this.label = label;
+        this.recipient = recipient;
+        this.phone = phone;
+        this.address = address;
+        this.detailAddress = detailAddress;
+        this.postalCode = postalCode;
+    }
 }
