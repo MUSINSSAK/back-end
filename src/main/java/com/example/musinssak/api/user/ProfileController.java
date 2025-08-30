@@ -1,5 +1,6 @@
 package com.example.musinssak.api.user;
 
+import com.example.musinssak.api.user.dto.PasswordLastModifiedResponse;
 import com.example.musinssak.api.user.dto.UpdatePasswordRequest;
 import com.example.musinssak.api.user.dto.UpdateUserProfileRequest;
 import com.example.musinssak.api.user.dto.UserProfileResponse;
@@ -9,6 +10,7 @@ import com.example.musinssak.domain.user.service.UserService;
 import com.example.musinssak.infra.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,5 +88,24 @@ public class ProfileController {
         String lastModifiedDate = userService.updatePassword(userId, request);
 
         return ResponseEntity.ok(ApiResponse.success("비밀번호가 성공적으로 변경되었습니다.", lastModifiedDate));
+    }
+
+
+    /**
+     * 마지막 비밀번호 변경일
+     * GET /api/users/me/password/last-modified
+     * @return 비밀번호 변경일
+     */
+    @GetMapping("/me/password/last-modified")
+    public ApiResponse<PasswordLastModifiedResponse> changePassword(@RequestHeader("Authorization") String authorizationHeader){
+
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+        String userId = jwtTokenProvider.getSubject(token);  // 액세스 토큰에서 사용자 ID 추출
+
+        // 서비스 호출 → "yyyy-MM-dd" 문자열 반환
+        String lastModifiedDate = userService.getPasswordLastModified(userId);
+
+        return ApiResponse.success("비밀번호 마지막 변경일이 조회되었습니다.", new PasswordLastModifiedResponse(lastModifiedDate)
+        );
     }
 }

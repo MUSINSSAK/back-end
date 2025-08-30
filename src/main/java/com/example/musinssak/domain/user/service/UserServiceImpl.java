@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -84,5 +86,17 @@ public class UserServiceImpl implements UserService {
 
         // 6) 마지막 변경일 반환 (yyyy-MM-dd 형식으로)
         return user.getLastPasswordModifiedAt().toLocalDate().toString();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getPasswordLastModified(String userId) {
+        Long id = Long.parseLong(userId);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        return user.getUpdatedAt()
+                .toLocalDate()
+                .format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 }
