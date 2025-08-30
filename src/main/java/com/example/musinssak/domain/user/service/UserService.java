@@ -16,4 +16,6 @@ public interface UserService {
     User updateProfile(long parseLong, UpdateUserProfileRequest request);
 
     String updatePassword(String userId, UpdatePasswordRequest request);
+
+    String getPasswordLastModified(String userId);
 }
