@@ -1,19 +1,13 @@
 package com.example.musinssak.api.product;
 
-import com.example.musinssak.api.product.dto.ProductListRequest;
-import com.example.musinssak.api.product.dto.ProductMainResponse;
-import com.example.musinssak.api.product.dto.ProductSearchRequest;
-import com.example.musinssak.api.product.dto.ProductSearchResultResponse;
+import com.example.musinssak.api.product.dto.*;
+import com.example.musinssak.api.product.facade.ProductDetailFacade;
 import com.example.musinssak.common.web.ApiResponse;
 import com.example.musinssak.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +17,7 @@ import java.util.Map;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductDetailFacade productDetailFacade;
 
     /**
      * 메인 화면 최신 상품 목록 10개 조회
@@ -70,6 +65,18 @@ public class ProductController {
         ProductSearchResultResponse data = productService.listProducts(request);
         return ResponseEntity.ok(
                 ApiResponse.success("상품 목록이 성공적으로 조회되었습니다.", data)
+        );
+    }
+
+    /**
+     * 상품 상세 조회
+     * GET /api/products/{productId}
+     */
+    @GetMapping("/{productId}")
+    public ResponseEntity<ApiResponse<ProductDetailResponse>> getProductDetail(@PathVariable Long productId) {
+        ProductDetailResponse data = productDetailFacade.getProductDetail(productId);
+        return ResponseEntity.ok(
+                ApiResponse.success("상품 상세 정보를 성공적으로 조회했습니다.", data)
         );
     }
 }
