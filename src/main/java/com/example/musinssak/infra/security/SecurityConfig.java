@@ -80,20 +80,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
 
                         // 내 정보 / 배송지 / 계정 보안
-                        .requestMatchers("/api/users/me/**").permitAll()
+                        .requestMatchers("/api/users/me/**").authenticated()
 
                         // 상품 문의 등록(POST만 보호)
-                        .requestMatchers(HttpMethod.POST, "/api/products/*/questions").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/*/questions").authenticated()
 
                         // 찜/최근 본 상품
-                        .requestMatchers("/api/users/me/wishlist/**").permitAll()
-                        .requestMatchers("/api/users/me/recent-products/**").permitAll()
+                        .requestMatchers("/api/users/me/wishlist/**").authenticated()
+                        .requestMatchers("/api/users/me/recent-products/**").authenticated()
 
                         // 장바구니
-                        .requestMatchers("/api/cart/**").permitAll()
+                        .requestMatchers("/api/cart/**").authenticated()
 
                         // 주문
-                        .requestMatchers("/api/orders/**").permitAll()
+                        .requestMatchers("/api/orders/**").authenticated()
 
                         /* ---------- ③ 그 외 ---------- */
                         .anyRequest().permitAll() // 개발 단계: 나머지는 공개. 필요 시 authenticated()로 전환
