@@ -47,10 +47,18 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-# Swagger Configuration
+# Swagger Configuration -> 배포 전(application.yml 하나로 유지)
 springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
   swagger-ui:
+    enabled: true
     path: /swagger-ui.html
+    doc-expansion: none
+    display-request-duration: true
+    operations-sorter: alpha
+    tags-sorter: alpha
 
 # Logging Configuration
 logging:
