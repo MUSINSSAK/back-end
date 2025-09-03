@@ -1,3 +1,4 @@
+// src/main/java/com/example/musinssak/domain/cart/service/CartServiceImpl.java
 package com.example.musinssak.domain.cart.service;
 
 import com.example.musinssak.common.exception.BusinessException;
@@ -8,13 +9,13 @@ import com.example.musinssak.domain.cart.repository.CartItemRepository;
 import com.example.musinssak.domain.cart.repository.CartRepository;
 import com.example.musinssak.domain.product.entity.ProductOption;
 import com.example.musinssak.domain.product.repository.ProductOptionRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional // 트랜잭션 열림
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
@@ -23,34 +24,26 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addItem(Long userId, Long productOptionId, int quantity) {
-        // 1) 수량 검증
-        if (quantity < 1) throw new BusinessException(ErrorCode.CART_ITEM_QUANTITY_INVALID);
+        if (quantity < 1) throw new BusinessException(ErrorCode.CART_ITEM_QUANTITY_INVALID); // 수량 검증함
 
-        // 2) 옵션 확인
         ProductOption option = productOptionRepository.findById(productOptionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND)); // 옵션 확인함
 
-        // 3) 내 장바구니 찾거나 생성
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> cartRepository.save(Cart.ofUser(userId)));
+                .orElseGet(() -> cartRepository.save(Cart.ofUser(userId))); // 카트 찾거나 만듦
 
-        // 4) 같은 옵션이 이미 있는지 확인
         CartItem item = cartItemRepository.findByCartIdAndProductOptionId(cart.getId(), option.getId())
-                .orElse(null);
+                .orElse(null); // 같은 옵션 줄 찾음
 
         if (item == null) {
-            // 새 줄 생성 (규칙 B: 기본 미선택)
-            if (option.getStock() < quantity) throw new BusinessException(ErrorCode.OUT_OF_STOCK);
-            CartItem newItem = CartItem.newItem(cart, option, quantity); // selected=false
-            cartItemRepository.save(newItem);
+            if (option.getStock() < quantity) throw new BusinessException(ErrorCode.OUT_OF_STOCK); // 재고 확인함
+            CartItem newItem = CartItem.newItem(cart, option, quantity); // 새 줄 만듦 (미선택됨)
+            cartItemRepository.save(newItem); // 저장함
         } else {
-            // 수량 누적 + 재고 체크
-            int newQty = item.getQuantity() + quantity;
-            if (option.getStock() < newQty) throw new BusinessException(ErrorCode.OUT_OF_STOCK);
-            item.changeQuantity(newQty);
-
-            // 과거 데이터가 NULL이면 미선택으로 보정 (규칙 B 유지)
-            item.markUnselectedIfNull();
+            int newQty = item.getQuantity() + quantity; // 누적 수량 계산함
+            if (option.getStock() < newQty) throw new BusinessException(ErrorCode.OUT_OF_STOCK); // 재고 확인함
+            item.changeQuantity(newQty); // 수량 바꿈
+            item.markUnselectedIfNull(); // null 보정함
         }
     }
 }
