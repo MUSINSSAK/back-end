@@ -38,6 +38,15 @@ public enum ErrorCode {
     NO_SEARCH_RESULT(HttpStatus.NOT_FOUND, "NO_SEARCH_RESULT", "검색 결과가 없습니다."),
     EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EXTERNAL_API_ERROR", "주소 검색 서비스에 일시적인 오류가 발생했습니다."),
 
+
+    // ===== 장바구니 / 상품옵션 추가 (Cart) =====
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "CART_NOT_FOUND", "장바구니를 찾을 수 없습니다."),
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "CART_ITEM_NOT_FOUND", "장바구니 상품을 찾을 수 없습니다."),
+    PRODUCT_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "PRODUCT_OPTION_NOT_FOUND", "상품 옵션을 찾을 수 없습니다."),
+    OUT_OF_STOCK(HttpStatus.CONFLICT, "OUT_OF_STOCK", "재고가 부족합니다."),
+    CART_ITEM_QUANTITY_INVALID(HttpStatus.BAD_REQUEST, "CART_ITEM_QUANTITY_INVALID", "수량은 1 이상이어야 합니다."),
+
+
     // 공통
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "요청 형식이 잘못되었습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다.");
