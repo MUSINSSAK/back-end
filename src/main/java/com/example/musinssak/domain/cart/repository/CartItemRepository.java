@@ -6,6 +6,7 @@ import com.example.musinssak.domain.cart.repository.view.CartItemRow;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,4 +65,15 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
         and c.id = :cartId
     """)
     Optional<CartItem> findByIdAndCartIdJoinOption(Long cartItemId, Long cartId);
+
+    // ====== [추가] 삭제/집계 메서드들임 ======
+
+    /** 단건 삭제: 내 소유 것만 지워짐 (반환: 지워진 행 수) */
+    long deleteByIdAndCart_UserId(Long cartItemId, Long userId);
+
+    /** 여러 개 삭제: 내 소유 것만 지워짐 (반환: 지워진 행 수) */
+    long deleteByIdInAndCart_UserId(Collection<Long> cartItemIds, Long userId);
+
+    /** 남은 줄 카운트: 내 장바구니의 줄 개수를 셈 */
+    long countByCart_UserId(Long userId);
 }
