@@ -1,6 +1,7 @@
 // src/main/java/com/example/musinssak/domain/cart/service/CartServiceImpl.java
 package com.example.musinssak.domain.cart.service;
 
+import com.example.musinssak.api.cart.dto.CartSelectResponse;
 import com.example.musinssak.common.exception.BusinessException;
 import com.example.musinssak.common.exception.ErrorCode;
 import com.example.musinssak.domain.cart.entity.Cart;
@@ -12,6 +13,7 @@ import com.example.musinssak.domain.product.repository.ProductOptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.HashSet;
 import java.util.List;
@@ -113,5 +115,29 @@ public class CartServiceImpl implements CartService {
 
         // 4) 결과 돌려줌 (부분 성공이어도 몇 개 지워졌는지 알려줌)
         return new CartDeleteResult((int) deleted, (int) remain);
+    }
+
+    // ======= 신규: 선택/해제 =======
+
+    @Override
+    public CartSelectResponse setSelectedBulk(Long userId, List<Long> cartItemIds, boolean isSelected) {
+        if (cartItemIds == null || cartItemIds.isEmpty())
+            throw new BusinessException(ErrorCode.INVALID_REQUEST);
+
+        Set<Long> uniqueIds = new HashSet<>(cartItemIds);
+        cartItemRepository.updateSelectedByIdsAndUserId(uniqueIds, userId, isSelected);
+
+        int count = cartItemRepository.countSelectedByUserId(userId);
+        Integer sum = cartItemRepository.sumSelectedPriceByUserId(userId);
+        return new CartSelectResponse(count, sum == null ? 0 : sum);
+    }
+
+    @Override
+    public CartSelectResponse setSelectedAll(Long userId, boolean isSelected) {
+        cartItemRepository.updateSelectedAllByUserId(userId, isSelected);
+
+        int count = cartItemRepository.countSelectedByUserId(userId);
+        Integer sum = cartItemRepository.sumSelectedPriceByUserId(userId);
+        return new CartSelectResponse(count, sum == null ? 0 : sum);
     }
 }

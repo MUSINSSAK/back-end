@@ -16,4 +16,12 @@ public interface CartService {
 
     /** 선택 삭제임 (체크박스) */
     CartDeleteResult removeSelected(Long userId, List<Long> cartItemIds);
+
+
+    /** 선택/해제 - 복수 */
+    com.example.musinssak.api.cart.dto.CartSelectResponse setSelectedBulk(Long userId, List<Long> cartItemIds, boolean isSelected);
+
+    /** 선택/해제 - 전체 */
+    com.example.musinssak.api.cart.dto.CartSelectResponse setSelectedAll(Long userId, boolean isSelected);
+
 }

@@ -18,6 +18,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.example.musinssak.api.cart.dto.CartSelectRequest;
+import com.example.musinssak.api.cart.dto.CartSelectResponse;
+
 
 @Tag(name = "Cart", description = "장바구니 API")
 @RestController
@@ -86,6 +89,35 @@ public class CartController {
         return ApiResponse.success("선택한 상품들이 삭제되었음.",
                 new CartDeleteResponse(result.getDeletedCount(), result.getRemainingItems()));
     }
+
+    /** 장바구니 선택/해제 (단일/복수/전체) */
+    @Operation(summary = "장바구니 선택/해제 (단일/복수/전체)")
+    @PutMapping("/select")
+    public ApiResponse<CartSelectResponse> setSelected(
+            Authentication auth,
+            @RequestBody @Valid CartSelectRequest req
+    ) {
+        Long userId = getUserIdOrThrow(auth);
+
+        if (req.getIsSelected() == null) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST); // isSelected는 필수 의미
+        }
+
+        CartSelectResponse result;
+        if (Boolean.TRUE.equals(req.getSelectAll())) {
+            // 전체 선택/해제
+            result = cartService.setSelectedAll(userId, req.getIsSelected());
+        } else {
+            // 단일/복수 선택/해제
+            if (req.getCartItemIds() == null || req.getCartItemIds().isEmpty()) {
+                throw new BusinessException(ErrorCode.INVALID_REQUEST);
+            }
+            result = cartService.setSelectedBulk(userId, req.getCartItemIds(), req.getIsSelected());
+        }
+
+        return ApiResponse.success("상품 선택이 변경되었음.", result);
+    }
+
 
 
     /** 인증 객체에서 userId를 꺼내는 도우미임 */

@@ -4,6 +4,7 @@ package com.example.musinssak.domain.cart.repository;
 import com.example.musinssak.domain.cart.entity.CartItem;
 import com.example.musinssak.domain.cart.repository.view.CartItemRow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;    // ★ 추가
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
@@ -66,7 +67,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     """)
     Optional<CartItem> findByIdAndCartIdJoinOption(Long cartItemId, Long cartId);
 
-    // ====== [추가] 삭제/집계 메서드들임 ======
+    // ====== 삭제/집계 메서드들 ======
 
     /** 단건 삭제: 내 소유 것만 지워짐 (반환: 지워진 행 수) */
     long deleteByIdAndCart_UserId(Long cartItemId, Long userId);
@@ -76,4 +77,45 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     /** 남은 줄 카운트: 내 장바구니의 줄 개수를 셈 */
     long countByCart_UserId(Long userId);
+
+    // ====== ★ 선택/해제 전용 메서드들 추가 ======
+
+    /** 특정 아이템들 선택/해제 (내 소유 것만) */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+      update CartItem ci
+         set ci.selected = :selected
+       where ci.id in :ids
+         and ci.cart.userId = :userId
+    """)
+    int updateSelectedByIdsAndUserId(Collection<Long> ids, Long userId, boolean selected);
+
+    /** 내 장바구니 전체 선택/해제 */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+      update CartItem ci
+         set ci.selected = :selected
+       where ci.cart.userId = :userId
+    """)
+    int updateSelectedAllByUserId(Long userId, boolean selected);
+
+    /** 현재 선택된 아이템 수 */
+    @Query("""
+      select count(ci)
+      from CartItem ci
+      where ci.cart.userId = :userId
+        and coalesce(ci.selected, false) = true
+    """)
+    int countSelectedByUserId(Long userId);
+
+    /** (선택된) 총 금액 = sum(quantity * (할인가격)) */
+    @Query("""
+      select sum(ci.quantity * coalesce(p.discountedPrice, p.originalPrice))
+      from CartItem ci
+        join ci.productOption po
+        join po.product p
+      where ci.cart.userId = :userId
+        and coalesce(ci.selected, false) = true
+    """)
+    Integer sumSelectedPriceByUserId(Long userId);
 }
