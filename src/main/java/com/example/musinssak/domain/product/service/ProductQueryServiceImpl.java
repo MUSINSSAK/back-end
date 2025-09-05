@@ -38,4 +38,12 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     public List<ProductOption> getOptions(Long productId) {
         return productOptionRepository.findAllByProductIdOrderByIdAsc(productId);
     }
+
+    @Override
+    public void assertExists(Long productId) {
+
+        if (productId == null || !productRepository.existsById(productId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+    }
 }
