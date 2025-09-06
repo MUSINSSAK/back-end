@@ -19,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     // 상품 id로 상품 + 브랜드 조회
     @Query("select p from Product p join fetch p.brand where p.id = :id")
     Optional<Product> findByIdWithBrand(@Param("id") Long id);
+
+    boolean existsById(Long id);
 }
