@@ -46,6 +46,11 @@ public enum ErrorCode {
     OUT_OF_STOCK(HttpStatus.CONFLICT, "OUT_OF_STOCK", "재고가 부족합니다."),
     CART_ITEM_QUANTITY_INVALID(HttpStatus.BAD_REQUEST, "CART_ITEM_QUANTITY_INVALID", "수량은 1 이상이어야 합니다."),
 
+    // 오더
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "로그인이 필요합니다"),
+    NO_SELECTED_ITEMS(HttpStatus.BAD_REQUEST, "NO_SELECTED_ITEMS", "주문할 상품을 선택해주세요."),
+    STOCK_RESERVATION_FAILED(HttpStatus.CONFLICT, "STOCK_RESERVATION_FAILED", "동시에 주문이 몰려 재고 예약에 실패했습니다. 잠시 후 다시 시도해주세요."),
+    INSUFFICIENT_STOCK(HttpStatus.CONFLICT, "INSUFFICIENT_STOCK", "재고가 부족합니다."),
 
     // 공통
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "요청 형식이 잘못되었습니다."),
