@@ -12,12 +12,13 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/** 재고 예약을 실제로 저장함 */
 @Service
 @RequiredArgsConstructor
 public class StockReservationServiceImpl implements StockReservationService {
@@ -33,25 +34,26 @@ public class StockReservationServiceImpl implements StockReservationService {
                                    List<ReservationPlan.ReservedItem> items,
                                    LocalDateTime expiresAt) {
 
-        // 0) 동일 옵션이 여러 번 들어오면 합쳐서 처리함
+        // 0) 같은 옵션 묶어서 수량 합침
         Map<Long, Integer> merged = new HashMap<>();
         for (ReservationPlan.ReservedItem it : items) {
             merged.merge(it.getProductOptionId(), it.getQuantity(), Integer::sum);
         }
 
-        // 1) 데드락 막으려고 옵션 id 오름차순으로 락을 잡음
+        // 1) 데드락 막으려고 옵션 id 오름차순으로 락 잡음
         List<Long> optionIds = new ArrayList<>(merged.keySet());
         optionIds.sort(Comparator.naturalOrder());
 
         List<RLock> locks = new ArrayList<>();
+
         try {
             // 2) 옵션별 분산락을 잡음
             for (Long optionId : optionIds) {
                 RLock lock = redissonClient.getLock("lock:stock:option:" + optionId); // 락 키 규칙임
-                boolean ok = lock.tryLock(5, 15, TimeUnit.SECONDS); // 5초 기다리고 15초 임대함
+                boolean ok = lock.tryLock(5, 30, TimeUnit.SECONDS); // 5초 기다리고 30초 임대함
                 if (!ok) {
-                    // 락을 못잡으면 일시적 충돌로 봄
-                    throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR); // 내부오류로 처리함
+                    // 락 못 잡으면 재시도 유도용 코드가 더 알맞음
+                    throw new BusinessException(ErrorCode.STOCK_RESERVATION_FAILED); // 409 성격임
                 }
                 locks.add(lock);
             }
@@ -62,17 +64,16 @@ public class StockReservationServiceImpl implements StockReservationService {
                 ProductOption po = productOptionRepository.findById(optionId)
                         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND)); // 옵션 없음임
 
-                int aliveReserved = stockReservationRepository.sumActiveQty(optionId, now); // 살아있는 예약 합임
-                int available = po.getStock() - aliveReserved; // 가용 재고임
-                int need = merged.get(optionId);               // 필요한 수량임
+                long aliveReserved = stockReservationRepository.sumUnexpiredReservedQty(optionId, now); // 살아있는 예약 합임
+                long available = (long) po.getStock() - aliveReserved; // 가용 재고임
+                int need = merged.get(optionId);                       // 필요한 수량임
 
                 if (available < need) {
-                    // 부족하면 품절 예외 던짐 → 트랜잭션 롤백됨
                     throw new BusinessException(ErrorCode.OUT_OF_STOCK); // 재고 부족임
                 }
             }
 
-            // 4) 모두 통과하면 예약행을 저장함
+            // 4) 모두 통과하면 예약행 저장함
             List<StockReservation> toSave = new ArrayList<>();
             for (Map.Entry<Long, Integer> e : merged.entrySet()) {
                 toSave.add(StockReservation.builder()
@@ -80,12 +81,36 @@ public class StockReservationServiceImpl implements StockReservationService {
                         .userId(userId)
                         .productOptionId(e.getKey())
                         .quantity(e.getValue())
-                        .reservationExpiresAt(expiresAt) // 만료 시각 저장함
+                        .reservationExpiresAt(expiresAt) // 만료 시각 저장됨
                         .build());
             }
             stockReservationRepository.saveAll(toSave); // 일괄 저장함
 
-            // 5) 계획 객체 만들어서 돌려줌
+            // 5) 커밋 후에 락을 풀도록 등록함
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCompletion(int status) {
+                        // 트랜잭션 끝난 뒤에 풀림
+                        for (int i = locks.size() - 1; i >= 0; i--) {
+                            RLock lock = locks.get(i);
+                            if (lock.isHeldByCurrentThread()) {
+                                lock.unlock(); // 락 해제함
+                            }
+                        }
+                    }
+                });
+            } else {
+                // 트랜잭션이 없으면 지금 바로 풀음(예외 케이스임)
+                for (int i = locks.size() - 1; i >= 0; i--) {
+                    RLock lock = locks.get(i);
+                    if (lock.isHeldByCurrentThread()) {
+                        lock.unlock();
+                    }
+                }
+            }
+
+            // 6) 계획 객체를 만들어 돌려줌
             List<ReservationPlan.ReservedItem> normalizedItems = new ArrayList<>();
             for (Map.Entry<Long, Integer> e : merged.entrySet()) {
                 normalizedItems.add(ReservationPlan.ReservedItem.builder()
@@ -101,16 +126,13 @@ public class StockReservationServiceImpl implements StockReservationService {
                     .build();
 
         } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt(); // 인터럽트 상태 복구함
+            Thread.currentThread().interrupt(); // 인터럽트 복구함
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR); // 내부오류로 처리함
-        } finally {
-            // 6) 락을 역순으로 풀음
-            for (int i = locks.size() - 1; i >= 0; i--) {
-                RLock lock = locks.get(i);
-                if (lock.isHeldByCurrentThread()) {
-                    lock.unlock(); // 락 해제함
-                }
-            }
+        } catch (BusinessException be) {
+            throw be; // 비즈니스 예외는 그대로 던짐
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR); // 기타 예외 방어함
         }
+        // 주의: 락 해제는 위에서 afterCompletion으로 처리됨
     }
 }

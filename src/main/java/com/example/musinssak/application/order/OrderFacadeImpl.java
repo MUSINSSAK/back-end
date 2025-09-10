@@ -10,10 +10,12 @@ import com.example.musinssak.domain.cart.repository.CartItemRepository;
 import com.example.musinssak.domain.order.entity.OrderItem;
 import com.example.musinssak.domain.order.entity.OrderStatus;
 import com.example.musinssak.domain.order.entity.Orders;
-import com.example.musinssak.domain.order.service.OrdersService; // 복수형 서비스 사용함
+import com.example.musinssak.domain.order.repository.StockReservationRepository;
+import com.example.musinssak.domain.order.service.OrdersService;
 import com.example.musinssak.domain.order.service.StockReservationService;
 import com.example.musinssak.domain.product.entity.Product;
 import com.example.musinssak.domain.product.entity.ProductOption;
+import com.example.musinssak.domain.product.repository.ProductOptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,25 +24,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 주문 생성 흐름을 조립함 */
 @Service
 @RequiredArgsConstructor
 public class OrderFacadeImpl implements OrderFacade {
 
-    private final CartItemRepository cartItemRepository;           // 장바구니 줄 조회함
-    private final OrdersService ordersService;                     // 주문 저장함
-    private final StockReservationService stockReservationService; // 재고 예약함
+    private final CartItemRepository cartItemRepository;
+    private final OrdersService ordersService;
+    private final StockReservationService stockReservationService;
 
-    /** 주문 생성함 */
+    // ▼ 추가
+    private final ProductOptionRepository productOptionRepository;
+    private final StockReservationRepository stockReservationRepository;
+
     @Override
     @Transactional
     public CreateOrderResult create(CreateOrderCommand command) {
         // 1) 파라미터 검증함
         if (command.getUserId() == null) {
-            throw new BusinessException(ErrorCode.AUTH_REQUIRED); // 로그인 필요함
+            throw new BusinessException(ErrorCode.AUTH_REQUIRED);
         }
         if (command.getCartItemIds() == null || command.getCartItemIds().isEmpty()) {
-            throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS); // 선택 없음임
+            // 프로젝트에 없다면 INVALID_REQUEST 등으로 바꿔도 됨
+            throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS);
         }
 
         Long userId = command.getUserId();
@@ -49,55 +54,71 @@ public class OrderFacadeImpl implements OrderFacade {
         // 2) 내 소유의 장바구니 줄을 id로 조회함
         List<CartItem> cartItems = cartItemRepository.findByIdInAndCart_UserId(ids, userId);
         if (cartItems.isEmpty()) {
-            throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS); // 없으면 예외 던짐
+            throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS);
         }
 
         // 3) 만료시각 계산함(현재 + 30분)
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(30);
 
         // 4) 합계 및 스냅샷 준비함
-        int totalProduct = 0;   // 총 원가 합임
-        int totalDiscount = 0;  // 총 할인 합임
-        int deliveryFee = 0;    // 배송비 0원임
+        int totalProduct = 0;
+        int totalDiscount = 0;
+        int deliveryFee = 0;
 
-        List<OrderItem> orderItems = new ArrayList<>(); // 주문아이템 스냅샷 목록임
+        List<OrderItem> orderItems = new ArrayList<>();
         List<StockReservationService.ReservationPlan.ReservedItem> reservedItems = new ArrayList<>();
-        List<CreateOrderResult.Item> respItems = new ArrayList<>(); // 응답용 목록임
+        List<CreateOrderResult.Item> respItems = new ArrayList<>();
 
-        // 5) 줄 돌면서 금액 계산하고 스냅샷/예약항목/응답항목 채움
+        // 5) 줄 돌면서 (잠금 후) 재고 가용성 체크 + 금액 계산 + 스냅샷/예약/응답 채움
         for (CartItem ci : cartItems) {
-            ProductOption option = ci.getProductOption(); // 옵션 꺼냄
-            Product product = option.getProduct();        // 상품 꺼냄
-            int qty = ci.getQuantity();                   // 수량 꺼냄
+            Long optionId = ci.getProductOption().getId();
+            int qty = ci.getQuantity();
 
-            int price = product.getOriginalPrice();       // 원가 단가임
-            Integer discounted = product.getDiscountedPrice(); // 할인가 단가일 수 있음
-            int salePrice = (discounted != null) ? discounted : price; // 없으면 원가임
+            // 5-1) 옵션 행을 잠금으로 읽음 (동시성 방지)
+            ProductOption lockedOption = productOptionRepository.findForUpdateById(optionId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+            Product product = lockedOption.getProduct();
 
-            totalProduct += price * qty;                     // 원가 합 더함
-            totalDiscount += (price - salePrice) * qty;      // 할인 합 더함
+            // 5-2) 유효 예약 수량 조회(만료 전만)
+            long reserved = stockReservationRepository
+                    .sumUnexpiredReservedQty(optionId, LocalDateTime.now());
 
-            // 주문아이템 스냅샷 만듦
+            // 5-3) 가용 재고 = 실제 재고 - 유효 예약
+            long available = (long) lockedOption.getStock() - reserved;
+            if (available < qty) {
+                // 재고 부족 → 바로 실패시킴
+                throw new BusinessException(ErrorCode.OUT_OF_STOCK);
+            }
+
+            // 5-4) 금액 계산
+            int price = product.getOriginalPrice();
+            Integer discounted = product.getDiscountedPrice();
+            int salePrice = (discounted != null) ? discounted : price;
+
+            totalProduct += price * qty;
+            totalDiscount += (price - salePrice) * qty;
+
+            // 5-5) 주문 아이템 스냅샷
             orderItems.add(OrderItem.builder()
                     .productId(product.getId())
-                    .productOptionId(option.getId())
+                    .productOptionId(optionId)
                     .quantity(qty)
                     .price(price)
                     .discountPrice(salePrice)
                     .build());
 
-            // 예약항목 한 줄 추가함
+            // 5-6) 예약 계획
             reservedItems.add(StockReservationService.ReservationPlan.ReservedItem.builder()
-                    .productOptionId(option.getId())
+                    .productOptionId(optionId)
                     .quantity(qty)
                     .build());
 
-            // 응답용 아이템 한 줄 채움
+            // 5-7) 응답용
             respItems.add(CreateOrderResult.Item.builder()
                     .productId(product.getId())
                     .productName(product.getName())
                     .brandName(product.getBrand().getName())
-                    .size(option.getSize())
+                    .size(lockedOption.getSize())
                     .quantity(qty)
                     .originalPrice(price)
                     .salePrice(salePrice)
@@ -107,7 +128,7 @@ public class OrderFacadeImpl implements OrderFacade {
         // 6) 최종금액 계산함
         int finalAmount = totalProduct - totalDiscount + deliveryFee;
 
-        // 7) 주문 저장함(번호 발급 + 아이템 저장됨)
+        // 7) 주문 저장함
         Orders saved = ordersService.createOrder(
                 userId,
                 OrderStatus.CREATED,
@@ -119,7 +140,7 @@ public class OrderFacadeImpl implements OrderFacade {
                 orderItems
         );
 
-        // 8) 주문 id로 재고 예약 생성함
+        // 8) 재고 예약 생성함(만료시각 포함)
         stockReservationService.reserve(
                 saved.getId(),
                 userId,
@@ -127,18 +148,18 @@ public class OrderFacadeImpl implements OrderFacade {
                 expiresAt
         );
 
-        // 9) 성공이면 선택한 장바구니 줄들을 삭제함
-        cartItemRepository.deleteByIdInAndCart_UserId(ids, userId); // 선택 줄 삭제됨
+        // 9) 성공이면 선택한 장바구니 줄 삭제함
+        cartItemRepository.deleteByIdInAndCart_UserId(ids, userId);
 
-        // 10) 결과 DTO 만들어 돌려줌
+        // 10) 결과 반환함
         return CreateOrderResult.builder()
-                .orderNo(saved.getOrderNumber())        // 주문번호 넣음
-                .reservationExpires(expiresAt)          // 만료시각 넣음
-                .totalProductAmount(totalProduct)       // 총 원가 합 넣음
-                .discountAmount(totalDiscount)          // 총 할인 합 넣음
-                .deliveryFee(deliveryFee)               // 배송비 넣음
-                .finalAmount(finalAmount)               // 최종 금액 넣음
-                .items(respItems)                       // 아이템 목록 넣음
+                .orderNo(saved.getOrderNumber())
+                .reservationExpires(expiresAt)
+                .totalProductAmount(totalProduct)
+                .discountAmount(totalDiscount)
+                .deliveryFee(deliveryFee)
+                .finalAmount(finalAmount)
+                .items(respItems)
                 .build();
     }
 }

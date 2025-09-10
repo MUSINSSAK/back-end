@@ -9,12 +9,17 @@ import java.time.LocalDateTime;
 
 public interface StockReservationRepository extends JpaRepository<StockReservation, Long> {
 
-    /** 아직 만료 안 된 예약 수량 합을 구함 */
+    /** 만료 전(=현재 시각 기준 살아있는) 예약 수량 합을 구함 */
     @Query("""
-        select coalesce(sum(sr.quantity), 0)
-          from StockReservation sr
-         where sr.productOptionId = :optionId
-           and sr.reservationExpiresAt > :now
+       select coalesce(sum(sr.quantity), 0)
+         from StockReservation sr
+        where sr.productOptionId = :productOptionId
+          and sr.reservationExpiresAt > :now
     """)
-    int sumActiveQty(Long optionId, LocalDateTime now);
+    long sumUnexpiredReservedQty(Long productOptionId, LocalDateTime now); // 0 보장됨
+
+    /** 서비스에서 쓰던 이름 유지용 별칭임 */
+    default long sumActiveQty(Long productOptionId, LocalDateTime now) {
+        return sumUnexpiredReservedQty(productOptionId, now);
+    }
 }
