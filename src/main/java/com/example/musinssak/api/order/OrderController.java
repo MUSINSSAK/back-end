@@ -6,14 +6,13 @@ import com.example.musinssak.api.order.dto.OrderCreateResponse;
 import com.example.musinssak.application.order.OrderFacade;
 import com.example.musinssak.application.order.command.CreateOrderCommand;
 import com.example.musinssak.application.order.result.CreateOrderResult;
-import com.example.musinssak.common.web.ApiResponse; // 우리 공통 응답 래퍼임
+import com.example.musinssak.common.web.ApiResponse; // 공통 응답 래퍼임
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import io.swagger.v3.oas.annotations.Operation;
-// ⚠ Swagger ApiResponse는 이름 충돌남 -> import 안함, FQN으로 씀
+// ⚠ Swagger ApiResponse는 이름 충돌 가능함 → FQN으로 씀
 
 /**
  * 주문 컨트롤러임
@@ -25,7 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderFacade orderFacade;
+    private final OrderFacade orderFacade; // 파사드 주입됨
 
     /**
      * [POST] /api/orders/create
@@ -52,25 +51,38 @@ public class OrderController {
 
         // 응답 DTO로 매핑함
         OrderCreateResponse resp = OrderCreateResponse.builder()
-                .orderId(result.getOrderNo())
-                .reservationExpiresAt(result.getReservationExpires())
-                .totalProductAmount(result.getTotalProductAmount())
-                .discountAmount(result.getDiscountAmount())
-                .deliveryFee(result.getDeliveryFee())
-                .finalAmount(result.getFinalAmount())
-                .orderItems(null) // 다음 단계에서 채움
+                .orderId(result.getOrderNo())                        // 주문번호임
+                .reservationExpiresAt(result.getReservationExpires())// 만료시각임
+                .totalProductAmount(result.getTotalProductAmount())  // 총 원가 합임
+                .discountAmount(result.getDiscountAmount())          // 총 할인 합임
+                .deliveryFee(result.getDeliveryFee())                // 배송비임
+                .finalAmount(result.getFinalAmount())                // 최종금액임
+                .orderItems(
+                        result.getItems() == null ? null :           // 널이면 널로 둠
+                                result.getItems().stream()
+                                        .map(it -> OrderCreateResponse.Item.builder()
+                                                .productId(it.getProductId())
+                                                .productName(it.getProductName())
+                                                .brandName(it.getBrandName())
+                                                .size(it.getSize())
+                                                .quantity(it.getQuantity())
+                                                .originalPrice(it.getOriginalPrice())
+                                                .salePrice(it.getSalePrice())
+                                                .build()
+                                        ).toList()
+                )
                 .build();
 
         // 공통 포맷으로 감싸서 반환함
         return ApiResponse.success(resp);
     }
 
-    // 인증에서 userId 꺼냄
+    /** 인증에서 userId 꺼냄 */
     private Long getUserIdOrThrow(Authentication authentication) {
         try {
-            return Long.parseLong(authentication.getName());
+            return Long.parseLong(authentication.getName()); // 문자열을 숫자로 바꿈
         } catch (Exception e) {
-            throw new IllegalStateException("인증에서 userId를 찾을 수 없음");
+            throw new IllegalStateException("인증에서 userId를 찾을 수 없음"); // 못 찾으면 예외 던짐
         }
     }
 }

@@ -10,7 +10,7 @@ import com.example.musinssak.domain.cart.repository.CartItemRepository;
 import com.example.musinssak.domain.order.entity.OrderItem;
 import com.example.musinssak.domain.order.entity.OrderStatus;
 import com.example.musinssak.domain.order.entity.Orders;
-import com.example.musinssak.domain.order.service.OrdersService; // ← 복수형 서비스 사용함
+import com.example.musinssak.domain.order.service.OrdersService; // 복수형 서비스 사용함
 import com.example.musinssak.domain.order.service.StockReservationService;
 import com.example.musinssak.domain.product.entity.Product;
 import com.example.musinssak.domain.product.entity.ProductOption;
@@ -28,7 +28,7 @@ import java.util.List;
 public class OrderFacadeImpl implements OrderFacade {
 
     private final CartItemRepository cartItemRepository;           // 장바구니 줄 조회함
-    private final OrdersService ordersService;                     // 주문 저장함(복수형)
+    private final OrdersService ordersService;                     // 주문 저장함
     private final StockReservationService stockReservationService; // 재고 예약함
 
     /** 주문 생성함 */
@@ -37,18 +37,17 @@ public class OrderFacadeImpl implements OrderFacade {
     public CreateOrderResult create(CreateOrderCommand command) {
         // 1) 파라미터 검증함
         if (command.getUserId() == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED); // 로그인 필요함
+            throw new BusinessException(ErrorCode.AUTH_REQUIRED); // 로그인 필요함
         }
         if (command.getCartItemIds() == null || command.getCartItemIds().isEmpty()) {
-            throw new BusinessException(ErrorCode.AUTH_REQUIRED); // 로그인 필요함
+            throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS); // 선택 없음임
         }
 
         Long userId = command.getUserId();
         List<Long> ids = command.getCartItemIds();
 
         // 2) 내 소유의 장바구니 줄을 id로 조회함
-        List<CartItem> cartItems =
-                cartItemRepository.findByIdInAndCart_UserId(ids, userId);
+        List<CartItem> cartItems = cartItemRepository.findByIdInAndCart_UserId(ids, userId);
         if (cartItems.isEmpty()) {
             throw new BusinessException(ErrorCode.NO_SELECTED_ITEMS); // 없으면 예외 던짐
         }
@@ -63,19 +62,20 @@ public class OrderFacadeImpl implements OrderFacade {
 
         List<OrderItem> orderItems = new ArrayList<>(); // 주문아이템 스냅샷 목록임
         List<StockReservationService.ReservationPlan.ReservedItem> reservedItems = new ArrayList<>();
+        List<CreateOrderResult.Item> respItems = new ArrayList<>(); // 응답용 목록임
 
-        // 5) 줄 돌면서 금액 계산하고 스냅샷/예약항목 채움
+        // 5) 줄 돌면서 금액 계산하고 스냅샷/예약항목/응답항목 채움
         for (CartItem ci : cartItems) {
             ProductOption option = ci.getProductOption(); // 옵션 꺼냄
             Product product = option.getProduct();        // 상품 꺼냄
             int qty = ci.getQuantity();                   // 수량 꺼냄
 
-            int price = product.getOriginalPrice();                 // 원가 단가임
-            Integer discounted = product.getDiscountedPrice();      // 할인가 단가일 수 있음
-            int discountPrice = (discounted != null) ? discounted : price; // 없으면 원가임
+            int price = product.getOriginalPrice();       // 원가 단가임
+            Integer discounted = product.getDiscountedPrice(); // 할인가 단가일 수 있음
+            int salePrice = (discounted != null) ? discounted : price; // 없으면 원가임
 
-            totalProduct += price * qty;                               // 원가 합 더함
-            totalDiscount += (price - discountPrice) * qty;            // 할인 합 더함
+            totalProduct += price * qty;                     // 원가 합 더함
+            totalDiscount += (price - salePrice) * qty;      // 할인 합 더함
 
             // 주문아이템 스냅샷 만듦
             orderItems.add(OrderItem.builder()
@@ -83,13 +83,24 @@ public class OrderFacadeImpl implements OrderFacade {
                     .productOptionId(option.getId())
                     .quantity(qty)
                     .price(price)
-                    .discountPrice(discountPrice)
+                    .discountPrice(salePrice)
                     .build());
 
             // 예약항목 한 줄 추가함
             reservedItems.add(StockReservationService.ReservationPlan.ReservedItem.builder()
                     .productOptionId(option.getId())
                     .quantity(qty)
+                    .build());
+
+            // 응답용 아이템 한 줄 채움
+            respItems.add(CreateOrderResult.Item.builder()
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .brandName(product.getBrand().getName())
+                    .size(option.getSize())
+                    .quantity(qty)
+                    .originalPrice(price)
+                    .salePrice(salePrice)
                     .build());
         }
 
@@ -124,6 +135,7 @@ public class OrderFacadeImpl implements OrderFacade {
                 .discountAmount(totalDiscount)          // 총 할인 합 넣음
                 .deliveryFee(deliveryFee)               // 배송비 넣음
                 .finalAmount(finalAmount)               // 최종 금액 넣음
-                .build();                               // item 목록은 다음 단계에서 확장함
+                .items(respItems)                       // 아이템 목록 넣음
+                .build();
     }
 }
