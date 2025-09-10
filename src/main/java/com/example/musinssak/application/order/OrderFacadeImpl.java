@@ -127,7 +127,10 @@ public class OrderFacadeImpl implements OrderFacade {
                 expiresAt
         );
 
-        // 9) 결과 DTO 만들어 돌려줌
+        // 9) 성공이면 선택한 장바구니 줄들을 삭제함
+        cartItemRepository.deleteByIdInAndCart_UserId(ids, userId); // 선택 줄 삭제됨
+
+        // 10) 결과 DTO 만들어 돌려줌
         return CreateOrderResult.builder()
                 .orderNo(saved.getOrderNumber())        // 주문번호 넣음
                 .reservationExpires(expiresAt)          // 만료시각 넣음
