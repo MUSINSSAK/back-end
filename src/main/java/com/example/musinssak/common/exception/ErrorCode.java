@@ -52,6 +52,8 @@ public enum ErrorCode {
     STOCK_RESERVATION_FAILED(HttpStatus.CONFLICT, "STOCK_RESERVATION_FAILED", "동시에 주문이 몰려 재고 예약에 실패했습니다. 잠시 후 다시 시도해주세요."),
     INSUFFICIENT_STOCK(HttpStatus.CONFLICT, "INSUFFICIENT_STOCK", "재고가 부족합니다."),
 
+
+
     // 공통
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "요청 형식이 잘못되었습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다.");
