@@ -52,7 +52,9 @@ public enum ErrorCode {
     STOCK_RESERVATION_FAILED(HttpStatus.CONFLICT, "STOCK_RESERVATION_FAILED", "동시에 주문이 몰려 재고 예약에 실패했습니다. 잠시 후 다시 시도해주세요."),
     INSUFFICIENT_STOCK(HttpStatus.CONFLICT, "INSUFFICIENT_STOCK", "재고가 부족합니다."),
 
-
+//주문창입력
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_NOT_FOUND", "주문을 찾을 수 없습니다."),
+    ORDER_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "ORDER_TIME_EXPIRED", "주문 시간이 만료되었습니다."),
 
     // 공통
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "요청 형식이 잘못되었습니다."),
