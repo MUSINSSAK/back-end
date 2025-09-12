@@ -4,6 +4,7 @@ package com.example.musinssak.domain.order.repository;
 import com.example.musinssak.domain.order.entity.OrderItem;
 import com.example.musinssak.domain.order.repository.view.OrderItemRow;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -32,4 +33,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
         order by oi.id asc
     """)
     List<OrderItemRow> findRowsByOrderIdAndUserId(Long orderId, Long userId);
+
+    /** 주문 id로 아이템들 가져옴 */
+    List<OrderItem> findByOrder_Id(Long orderId);
 }

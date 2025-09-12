@@ -79,4 +79,19 @@ public class Orders {
         if (this.createdAt == null) this.createdAt = LocalDateTime.now(); // 생성시간 채움
         // expiredAt은 파사드/서비스에서 30분 뒤로 세팅함
     }
+    /** 주문자 정보 세팅함 */
+    public void applyOrderer(String name, String email, String phone) {
+        this.ordererName = name;
+        this.ordererEmail = email;
+        this.ordererPhone = phone;
+    }
+
+    /** 금액 필드들을 갱신함 */
+    public void applyAmounts(int totalProductPrice, int totalDiscountPrice, int deliveryFee, int finalPaymentPrice) {
+        this.totalProductPrice = totalProductPrice;
+        this.totalDiscountPrice = totalDiscountPrice;
+        this.deliveryFee = deliveryFee;
+        this.finalPaymentPrice = finalPaymentPrice;
+    }
+
 }
