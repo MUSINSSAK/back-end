@@ -3,7 +3,9 @@ package com.example.musinssak.api.order;
 
 import com.example.musinssak.api.order.dto.OrderCreateRequest;
 import com.example.musinssak.api.order.dto.OrderCreateResponse;
+import com.example.musinssak.api.order.dto.OrderItemsResponse;
 import com.example.musinssak.application.order.OrderFacade;
+import com.example.musinssak.application.order.OrderQueryService;
 import com.example.musinssak.application.order.command.CreateOrderCommand;
 import com.example.musinssak.application.order.result.CreateOrderResult;
 import com.example.musinssak.common.web.ApiResponse; // 공통 응답 래퍼임
@@ -24,7 +26,8 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderFacade orderFacade; // 파사드 주입됨
+    private final OrderFacade orderFacade;           // 주문 생성 파사드 주입됨
+    private final OrderQueryService orderQueryService; // 주문 조회 서비스 주입됨
 
     /**
      * [POST] /api/orders/create
@@ -75,6 +78,25 @@ public class OrderController {
 
         // 공통 포맷으로 감싸서 반환함
         return ApiResponse.success(resp);
+    }
+
+    /**
+     * [GET] /api/orders/{orderId}/items
+     * - 주문 상품 목록과 합계를 내려줌
+     * - 내 주문만 조회 가능함(소유자 검증함)
+     * - 가격은 주문 시점 스냅샷(oi.price/oi.discountPrice)로 내려줌
+     */
+    @Operation(summary = "주문 상품 조회", description = "주문 ID로 상품 목록과 합계를 내려줌(내 주문만 가능함)")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공")
+    @GetMapping("/{orderId}/items")
+    public ApiResponse<OrderItemsResponse> getOrderItems(
+            @PathVariable Long orderId,
+            Authentication authentication
+    ) {
+        Long userId = getUserIdOrThrow(authentication); // 유저 id 꺼냄
+        // 서비스 호출해서 응답 만들음
+        OrderItemsResponse body = orderQueryService.getOrderItems(orderId, userId);
+        return ApiResponse.success(body); // 공통 포맷으로 감싸서 반환함
     }
 
     /** 인증에서 userId 꺼냄 */
