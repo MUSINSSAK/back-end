@@ -25,6 +25,12 @@ public enum ErrorCode {
     EMAIL_NOT_FOUND(HttpStatus.UNAUTHORIZED, "EMAIL_NOT_FOUND", "등록되지 않은 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "INVALID_PASSWORD", "비밀번호가 일치하지 않습니다."),
 
+    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 비밀번호 찾기 관련 에러 코드를 여기에 추가합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+    CODE_EXPIRED(HttpStatus.BAD_REQUEST, "CODE_EXPIRED", "인증번호가 만료되었습니다."),
+    INVALID_CODE(HttpStatus.BAD_REQUEST, "INVALID_CODE", "인증번호가 일치하지 않습니다."),
+    UNVERIFIED_EMAIL(HttpStatus.FORBIDDEN, "UNVERIFIED_EMAIL", "인증되지 않은 이메일입니다."),
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 여기까지 추가 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
     // 사용자 프로필 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "사용자 정보를 찾을 수 없습니다."),
 
