@@ -77,6 +77,8 @@ dependencies {
 
     // 주소검색 JDK 9 이상에서 PostConstruct 사용을 위해
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    // 비밀번호 찾기 이메일 기능
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {
