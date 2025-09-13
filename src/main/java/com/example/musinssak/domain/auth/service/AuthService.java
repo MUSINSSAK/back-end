@@ -15,8 +15,6 @@ public interface AuthService {
     void register(RegisterRequest request);
     LoginResponse login(LoginRequest request);
 
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 여기에 3개의 메소드 선언을 추가합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-
     /**
      * 비밀번호 재설정 요청을 처리하고 인증 이메일을 발송합니다.
      * @param requestDto 사용자가 입력한 이메일 정보
@@ -35,5 +33,4 @@ public interface AuthService {
      */
     void resetPassword(PasswordResetDto resetDto);
 
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 여기까지 추가 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 }

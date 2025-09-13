@@ -19,10 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @Service: 이 클래스가 비즈니스 로직을 처리하는 '서비스' 역할을 한다고 스프링에게 알려줍니다.
- * 이 어노테이션이 있어야 스프링이 객체(Bean)로 만들어서 다른 곳에서 사용할 수 있게 해줍니다.
- */
+
 @Service
 @RequiredArgsConstructor // final이 붙은 필드들을 사용하는 생성자를 자동으로 만들어줍니다 (의존성 주입).
 public class AuthServiceImpl implements AuthService {

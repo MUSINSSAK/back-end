@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 // @Getter: 이 클래스의 모든 필드에 대한 getter 메소드를 자동으로 만들어줍니다.
-// 예를 들어, getEmail() 메소드를 직접 작성하지 않아도 됩니다.
 @Getter
 public class PasswordRequestDto {
 
