@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderFacade orderFacade;                 // 주문 생성 파사드 주입됨
-    private final OrderQueryService orderQueryService;     // 주문 조회 서비스 주입됨
-    private final OrderPrepareService orderPrepareService; // 주문 정보 업데이트/재계산 서비스 주입됨
+    private final OrderFacade orderFacade;                 // 주문 생성 파사드
+    private final OrderQueryService orderQueryService;     // 주문 조회 서비스
+    private final OrderPrepareService orderPrepareService; // 주문 준비(정보 갱신/재계산) 서비스
 
     /**
      * [POST] /api/orders/create
@@ -38,7 +38,7 @@ public class OrderController {
      * - 재고예약/만료시간 등은 파사드가 처리함
      */
     @Operation(summary = "주문 생성", description = "장바구니 선택 상품으로 주문 생성함")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공") // 이름 충돌 방지 위해 FQN 사용함
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공") // 이름 충돌 방지 위해 FQN 사용
     @PostMapping("/create")
     public ApiResponse<OrderCreateResponse> createOrder(
             @Valid @RequestBody OrderCreateRequest req,
@@ -57,12 +57,12 @@ public class OrderController {
 
         // 응답 DTO로 매핑함
         OrderCreateResponse resp = OrderCreateResponse.builder()
-                .orderId(result.getOrderNo())                        // 주문번호임
-                .reservationExpiresAt(result.getReservationExpires())// 만료시각임
-                .totalProductAmount(result.getTotalProductAmount())  // 총 원가 합임
-                .discountAmount(result.getDiscountAmount())          // 총 할인 합임
-                .deliveryFee(result.getDeliveryFee())                // 배송비임
-                .finalAmount(result.getFinalAmount())                // 최종금액임
+                .orderId(result.getOrderNo())                         // 주문번호임
+                .reservationExpiresAt(result.getReservationExpires()) // 만료시각임
+                .totalProductAmount(result.getTotalProductAmount())   // 총 원가 합임
+                .discountAmount(result.getDiscountAmount())           // 총 할인 합임
+                .deliveryFee(result.getDeliveryFee())                 // 배송비임
+                .finalAmount(result.getFinalAmount())                 // 최종금액임
                 .orderItems(
                         result.getItems() == null ? null :
                                 result.getItems().stream()
@@ -74,8 +74,8 @@ public class OrderController {
                                                 .quantity(it.getQuantity())
                                                 .originalPrice(it.getOriginalPrice())
                                                 .salePrice(it.getSalePrice())
-                                                .build()
-                                        ).toList()
+                                                .build())
+                                        .toList()
                 )
                 .build();
 
@@ -102,13 +102,31 @@ public class OrderController {
     }
 
     /**
-     * [PUT] /api/orders/{orderId}
+     * [POST] /api/orders/{orderId}/prepare
      * - 주문 페이지에서 입력한 주문자/배송지 정보를 임시 저장함
      * - 현재 상품 가격 기준으로 금액을 즉시 재계산해서 돌려줌
      * - 주문이 CREATED 상태/유효시간 내일 때만 동작함
      */
-    @Operation(summary = "주문 정보 업데이트 및 금액 재계산",
+    @Operation(summary = "주문 준비(정보 갱신 + 금액 재계산)",
             description = "주문자/배송지 정보를 임시 저장하고 현재 가격 기준으로 결제 예정 금액을 재계산함")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공")
+    @PostMapping("/{orderId}/prepare")
+    public ApiResponse<OrderUpdateResponse> prepareOrder(
+            @PathVariable Long orderId,
+            @Valid @RequestBody OrderUpdateRequest req,
+            Authentication authentication
+    ) {
+        Long userId = getUserIdOrThrow(authentication);
+        OrderUpdateResponse body = orderPrepareService.updateAndRecalculate(orderId, userId, req);
+        return ApiResponse.success(body);
+    }
+
+    /**
+     * (선택) [PUT] /api/orders/{orderId}
+     * - 위의 /prepare와 동일 동작을 제공함(호환용)
+     * - 필요 없으면 나중에 제거해도 됨
+     */
+    @Operation(summary = "주문 정보 업데이트(호환용)", description = "prepare와 동일한 동작을 PUT으로 제공함")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공")
     @PutMapping("/{orderId}")
     public ApiResponse<OrderUpdateResponse> updateOrder(
@@ -116,9 +134,9 @@ public class OrderController {
             @Valid @RequestBody OrderUpdateRequest req,
             Authentication authentication
     ) {
-        Long userId = getUserIdOrThrow(authentication); // 유저 id 꺼냄
-        OrderUpdateResponse body = orderPrepareService.updateAndRecalculate(orderId, userId, req); // 서비스 호출함
-        return ApiResponse.success(body); // 공통 포맷으로 감싸서 반환함
+        Long userId = getUserIdOrThrow(authentication);
+        OrderUpdateResponse body = orderPrepareService.updateAndRecalculate(orderId, userId, req);
+        return ApiResponse.success(body);
     }
 
     /** 인증에서 userId 꺼냄 */
@@ -126,7 +144,7 @@ public class OrderController {
         try {
             return Long.parseLong(authentication.getName()); // 문자열을 숫자로 바꿈
         } catch (Exception e) {
-            throw new IllegalStateException("인증에서 userId를 찾을 수 없음"); // 못 찾으면 예외 던짐
+            throw new IllegalStateException("인증에서 userId를 찾을 수 없음");
         }
     }
 }

@@ -93,5 +93,12 @@ public class Orders {
         this.deliveryFee = deliveryFee;
         this.finalPaymentPrice = finalPaymentPrice;
     }
+//만료 처리
+    public void markPaymentExpired() {
+        if (this.status == OrderStatus.CREATED) {
+            this.status = OrderStatus.PAYMENT_EXPIRED;
+        }
+    }
+
 
 }
