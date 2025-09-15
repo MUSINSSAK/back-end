@@ -31,12 +31,12 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 | 보안 & <br> 인증    | Spring Security + JJWT          | JWT 기반 인증/인가로 무상태 아키텍처 구현 | - 로그인/로그아웃 API <br> - Access/Refresh  <br> → Token 발급 및 검증 |
 | API 문서화     | Springdoc (Swagger UI)          | API 테스트 및 문서화를 빠르게 지원 | - `/swagger-ui.html`을 통한  <br> 개발/QA 협업 |
 | 클라우드/ <br> 배포 <br> (진행중) | GitHub Actions, Docker Compose, AWS EC2 | GitHub Actions로 CI/CD 자동화, Docker Compose로 환경 일관성 확보, AWS EC2 프리티어로 비용 절감 | - main 브랜치 푸시 시  <br> 자동 빌드/배포 <br> - BE/DB/Redis/Kafka를 Docker Compose로 관리 <br> - AWS EC2에 배포 |
-| 모니터링 <br> (진행중)    | Scouter APM                     | WAS 성능 및 트랜잭션 모니터링 지원 | - JVM/SQL 성능 모니터링 <br> - 실시간 로그 및 메트릭 확인 |
+| 모니터링 <br>(진행중) | Prometheus + Grafana | 메트릭 기반 WAS 성능/안정성 모니터링 | - Spring Boot Actuator + Micrometer → `/actuator/prometheus` 수집 <br> - Docker Compose 분리(`infra/monitoring`)로 독립 기동 <br> - 대시보드: RPS(30s), p95(1m), 5xx 에러율, Tomcat Thread Util, Hikari Util/Pending, Top5 RPS·p95 by URI <br> - 운영: Actuator 8081(내부망), 개발: 8080 |
 | 환경 변수 <br> 관리  | .env                   | 민감 정보 별도 관리로 보안 강화 | - DB 계정, JWT Secret, <br>Kakao API Key 관리 |
 | 프론트엔드 | React(ts), Vite, Axios | 빠른 번들링(Vite)과 간단한 API 호출(Axios)로 효율적인 UI/데이터 연동 | - API 호출 |
 | 빌드 도구 | Gradle | 의존성 관리 및 빌드 자동화 | - Spring Boot 프로젝트 빌드/테스트/배포 |
 | 테스트/협업 | Postman, GitHub PR | API 테스트 및 협업 표준화 | - API 시나리오 테스트 <br> - 브랜치 전략 & 코드 리뷰 |
-
+> *Scouter APM → Prometheus+Grafana 전환 이유*: 커스텀 지표/대시보드 구성의 유연성, CI/CD·로컬 분리 기동, 커뮤니티 대시보드/생태계 활용.
 
 ---
 
@@ -153,13 +153,19 @@ src/
 
 ---
 
-## 🔥 BE 챌린지 & 해결 (문제 상황과 해결 과정 (성능, 동시성, 보안 등) 진행 중)
+## 🔥 BE 챌린지 & 해결 (문제 상황과 해결 과정 (성능, 동시성, 보안 등) 진행 중) 
+### Scouter
 <img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/200c36f0-c372-4c70-9e2d-b4b21c495689" />
 
+### Prometheus, Grafana 
+[프로메테우스·그라파나로 지표 확인 → 리팩토링으로 그래프 개선(클릭)](https://www.notion.so/26c927b3f196806d8b63c262ca0ef406?source=copy_link)
 
-- 현재 Scouter APM 기반 모니터링 성능 분석
-- 서버 부하 테스트 및 병목 지점 확인 → 성능 개선 아이디어 정리 중
-- 진행 상황은 이미지(Scouter 대시보드 캡처)와 함께 업데이트 예정
+<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/4e727253-d8d8-4ab6-a970-2cad8963d8e2" />
+
+- Prometheus + Grafana 기반 모니터링로 전환하여 성능 분석 진행 (Spring Boot Actuator + Micrometer, /actuator/prometheus)
+- 부하 테스트 중 RPS, p95, 5xx, Tomcat Thread Util, Hikari Util/Pending 지표로 병목 식별 → 개선 아이디어 정리/적용
+- 진행 상황은 Grafana 대시보드 캡처(전/후 비교 그래프)와 함께 업데이트 예정
+
 
 ---
 
