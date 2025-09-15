@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "spring-boot"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8080"]
+        # Windows/Mac Docker Desktop: host.docker.internal
+        # 리눅스 네이티브 Docker면 172.17.0.1 또는 실제 호스트 IP로 교체

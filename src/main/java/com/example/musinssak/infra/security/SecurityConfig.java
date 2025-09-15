@@ -95,6 +95,9 @@ public class SecurityConfig {
                         // 주문
                         .requestMatchers("/api/orders/**").authenticated()
 
+                        // 모니터링
+                        .requestMatchers("/actuator/health", "/actuator/prometheus").permitAll()
+
                         /* ---------- ③ 그 외 ---------- */
                         .anyRequest().permitAll() // 개발 단계: 나머지는 공개. 필요 시 authenticated()로 전환
                 )
