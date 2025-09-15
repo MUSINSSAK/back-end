@@ -1,5 +1,8 @@
 server:
   port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true   # ← Tomcat 스레드/세션 지표가 생성되도록 MBean 등록
 
 spring:
   flyway: # Flyway 활성화
@@ -86,3 +89,34 @@ kakao:
   local:
     base-url: https://dapi.kakao.com
     rest-api-key: ${KAKAO_REST_API_KEY}
+
+# 개발 모니터링 (운영: 서비스는 8080 유지, Actuator만 8081로 분리)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [health, info, prometheus]   # 리스트 형태 권장
+  endpoint:
+    health:
+      show-details: "always"
+
+  metrics:
+    enable:
+      tomcat: true        # ← 톰캣 메트릭 바인더 활성화(보통 기본 true지만 명시 권장)
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true      # 히스토그램 ON (HTTP 서버)
+      slo:
+        http:
+          server:
+            # 소수초(0.1s, 0.3s ...) 대신 정수 Duration 사용
+            requests: [ 100ms, 300ms, 500ms, 1s, 3s ]
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
