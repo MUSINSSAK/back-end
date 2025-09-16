@@ -8,6 +8,9 @@ public enum ErrorCode {
     // 상세 페이지
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PRODUCT_NOT_FOUND", "해당 상품을 찾을 수 없습니다."),
 
+    // 포인트 공통
+    POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "POINT_NOT_FOUND", "적립금 정보를 찾을 수 없습니다."),
+
     // 비밀번호 변경 관련 (400)
     INVALID_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "INVALID_CURRENT_PASSWORD", "현재 비밀번호가 일치하지 않습니다."),
 
