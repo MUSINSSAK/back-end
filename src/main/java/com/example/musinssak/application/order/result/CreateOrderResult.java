@@ -11,6 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateOrderResult {
+
+    /** ★ 추가: DB PK */
+    private Long orderPk;
+
+
     private String orderNo;                 // 주문번호임
     private LocalDateTime reservationExpires; // 만료시각임
     private int totalProductAmount;         // 총 원가 합임
