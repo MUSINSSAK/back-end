@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderCreateResponse {
+    private Long   orderPk;              // ★ 추가: 주문 PK
     private String orderId;                  // 주문번호임
     private List<Item> orderItems;           // 주문 아이템 목록임
     private int totalProductAmount;          // 총 원가 합임

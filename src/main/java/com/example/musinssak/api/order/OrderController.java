@@ -57,6 +57,7 @@ public class OrderController {
 
         // 응답 DTO로 매핑함
         OrderCreateResponse resp = OrderCreateResponse.builder()
+                .orderPk(result.getOrderPk()) //주문 id pk
                 .orderId(result.getOrderNo())                         // 주문번호임
                 .reservationExpiresAt(result.getReservationExpires()) // 만료시각임
                 .totalProductAmount(result.getTotalProductAmount())   // 총 원가 합임
