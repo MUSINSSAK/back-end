@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderItemsResponse {
 
+    private Long orderPk;                   // 주문 PK임
     private Long orderId;                   // 주문 id임
     private String orderNumber;             // 주문번호임
     private String status;                  // 주문상태임
@@ -37,5 +38,6 @@ public class OrderItemsResponse {
         private int quantity;       // 수량임
         private int originalPrice;  // 원가 단가임
         private int salePrice;      // 할인가 단가임
+        private String imageUrl;    // 상품 이미지 URL임
     }
 }

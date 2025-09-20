@@ -15,4 +15,5 @@ public class OrderItemRow {
     private int quantity;        // 수량임
     private int originalPrice;   // 원가 단가임
     private int salePrice;       // 할인가 단가임
+    private String imageUrl;     // 상품 이미지 URL임
 }

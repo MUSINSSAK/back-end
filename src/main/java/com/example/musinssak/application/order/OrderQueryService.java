@@ -7,4 +7,7 @@ import com.example.musinssak.api.order.dto.OrderItemsResponse;
 public interface OrderQueryService {
     /** 내 주문 아이템 목록/합계 내려줌 */
     OrderItemsResponse getOrderItems(Long orderId, Long userId);
+
+    /** 주문번호로 내 주문 아이템 목록/합계 내려줌 */
+    OrderItemsResponse getOrderItemsByNumber(String orderNumber, Long userId);
 }

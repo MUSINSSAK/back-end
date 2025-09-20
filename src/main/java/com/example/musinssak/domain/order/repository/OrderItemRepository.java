@@ -21,7 +21,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             po.size,
             oi.quantity,
             oi.price,
-            oi.discountPrice
+            oi.discountPrice,
+            p.thumbnailImageUrl
         )
         from OrderItem oi
           join oi.order o

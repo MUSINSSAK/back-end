@@ -153,6 +153,7 @@ public class OrderFacadeImpl implements OrderFacade {
 
         // 10) 결과 반환함
         return CreateOrderResult.builder()
+                .orderPk(saved.getId())
                 .orderNo(saved.getOrderNumber())
                 .reservationExpires(expiresAt)
                 .totalProductAmount(totalProduct)
