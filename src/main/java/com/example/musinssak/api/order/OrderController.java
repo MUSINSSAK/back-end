@@ -103,6 +103,23 @@ public class OrderController {
     }
 
     /**
+     * [GET] /api/orders/number/{orderNumber}/items
+     * - 주문번호로 주문 상품 목록과 합계를 내려줌
+     * - 내 주문만 조회 가능함(소유자 검증함)
+     */
+    @Operation(summary = "주문번호로 주문 상품 조회", description = "주문번호로 상품 목록과 합계를 내려줌(내 주문만 가능함)")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공")
+    @GetMapping("/number/{orderNumber}/items")
+    public ApiResponse<OrderItemsResponse> getOrderItemsByNumber(
+            @PathVariable String orderNumber,
+            Authentication authentication
+    ) {
+        Long userId = getUserIdOrThrow(authentication); // 유저 id 꺼냄
+        OrderItemsResponse body = orderQueryService.getOrderItemsByNumber(orderNumber, userId); // 서비스 호출함
+        return ApiResponse.success(body); // 공통 포맷으로 감싸서 반환함
+    }
+
+    /**
      * [POST] /api/orders/{orderId}/prepare
      * - 주문 페이지에서 입력한 주문자/배송지 정보를 임시 저장함
      * - 현재 상품 가격 기준으로 금액을 즉시 재계산해서 돌려줌

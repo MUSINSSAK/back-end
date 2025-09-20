@@ -55,6 +55,7 @@ public enum ErrorCode {
 //주문창입력
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_NOT_FOUND", "주문을 찾을 수 없습니다."),
     ORDER_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "ORDER_TIME_EXPIRED", "주문 시간이 만료되었습니다."),
+    INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "INVALID_ORDER_STATUS", "결제할 수 없는 주문 상태입니다."),
 
 
 

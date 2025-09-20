@@ -45,6 +45,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
         // 4) 응답
         return OrderItemsResponse.builder()
+                .orderPk(order.getId())
                 .orderId(order.getId())
                 .orderNumber(order.getOrderNumber())
                 .status(order.getStatus().name())
@@ -62,6 +63,50 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                                 .quantity(r.getQuantity())
                                 .originalPrice(r.getOriginalPrice())
                                 .salePrice(r.getSalePrice())
+                                .imageUrl(r.getImageUrl())
+                                .build()
+                ).toList())
+                .build();
+    }
+
+    @Override
+    public OrderItemsResponse getOrderItemsByNumber(String orderNumber, Long userId) {
+        // 1) 내 주문인지 확인
+        Orders order = ordersRepository.findByOrderNumberAndUserId(orderNumber, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN));
+
+        // 2) 만료 즉시 반영(읽기 트랜잭션이지만 내부에서 REQUIRES_NEW로 상태만 커밋)
+        if (order.getStatus() == OrderStatus.CREATED
+                && order.getExpiredAt() != null
+                && order.getExpiredAt().isBefore(LocalDateTime.now())) {
+            orderStatusUpdater.markPaymentExpiredNow(order.getId()); // DB에 바로 반영
+            throw new BusinessException(ErrorCode.ORDER_TIME_EXPIRED);
+        }
+
+        // 3) 아이템 조인 조회
+        List<OrderItemRow> rows = orderItemRepository.findRowsByOrderIdAndUserId(order.getId(), userId);
+
+        // 4) 응답
+        return OrderItemsResponse.builder()
+                .orderPk(order.getId())
+                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .status(order.getStatus().name())
+                .reservationExpiresAt(order.getExpiredAt())
+                .totalProductAmount(order.getTotalProductPrice())
+                .discountAmount(order.getTotalDiscountPrice())
+                .deliveryFee(order.getDeliveryFee())
+                .finalAmount(order.getFinalPaymentPrice())
+                .items(rows.stream().map(r ->
+                        OrderItemsResponse.Item.builder()
+                                .productId(r.getProductId())
+                                .productName(r.getProductName())
+                                .brandName(r.getBrandName())
+                                .size(r.getSize())
+                                .quantity(r.getQuantity())
+                                .originalPrice(r.getOriginalPrice())
+                                .salePrice(r.getSalePrice())
+                                .imageUrl(r.getImageUrl())
                                 .build()
                 ).toList())
                 .build();

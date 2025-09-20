@@ -17,6 +17,9 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     /** 내 주문 단건 찾음(소유자 검증용) */
     Optional<Orders> findByIdAndUserId(Long id, Long userId);
 
+    /** 주문번호로 내 주문 찾음(소유자 검증용) */
+    Optional<Orders> findByOrderNumberAndUserId(String orderNumber, Long userId);
+
     /** CREATED 상태이면서 만료된 주문을 PAYMENT_EXPIRED 로 일괄 변경(스케줄러용) */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
