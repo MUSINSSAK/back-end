@@ -15,4 +15,7 @@ import java.util.List;
  */
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
     List<Product> findTop10ByOrderByCreatedAtDesc();
+
+    // ID 리스트를 받아 해당하는 모든 상품을 조회하는 메서드
+    List<Product> findAllByIdIn(List<Long> ids);
 }
