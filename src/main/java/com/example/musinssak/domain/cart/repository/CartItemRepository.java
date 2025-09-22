@@ -118,4 +118,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
         and coalesce(ci.selected, false) = true
     """)
     Integer sumSelectedPriceByUserId(Long userId);
+
+    // 선택된 id들로 내 장바구니 줄들을 가져옴
+    List<CartItem> findByIdInAndCart_UserId(java.util.Collection<Long> ids, Long userId);
 }
