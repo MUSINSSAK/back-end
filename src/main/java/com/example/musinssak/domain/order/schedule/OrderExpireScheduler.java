@@ -21,9 +21,22 @@ public class OrderExpireScheduler {
     @Scheduled(fixedDelay = 60_000) // 1분 간격으로 돈됨
     @Transactional
     public void expire() {
-        int changed = ordersRepository.markExpired(LocalDateTime.now()); // 만료시킴
-        if (changed > 0) {
-            log.info("만료 처리된 주문 개수: {}", changed); // 몇 건 바뀌었는지 로그 찍힘
-        }
+        LocalDateTime now = LocalDateTime.now();
+        log.info("=== 스케줄러 만료 처리 시작: {} ===", now);
+
+        // 1) CREATED 상태 만료 처리
+        log.info("CREATED 상태 만료 처리 시작");
+        int createdExpired = ordersRepository.markExpired(now);
+        log.info("CREATED 상태 만료 처리 결과: {}건", createdExpired);
+
+        // 2) PAYMENT_PENDING 상태 만료 처리
+        log.info("PAYMENT_PENDING 상태 만료 처리 시작");
+        int paymentPendingExpired = ordersRepository.markPaymentPendingExpired(now);
+        log.info("PAYMENT_PENDING 상태 만료 처리 결과: {}건", paymentPendingExpired);
+
+        // 3) 전체 만료 처리 요약
+        int totalExpired = createdExpired + paymentPendingExpired;
+        log.info("=== 스케줄러 만료 처리 완료: 총 {}건 (CREATED: {}, PAYMENT_PENDING: {}) ===",
+                totalExpired, createdExpired, paymentPendingExpired);
     }
 }

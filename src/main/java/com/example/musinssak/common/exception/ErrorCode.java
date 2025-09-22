@@ -57,6 +57,9 @@ public enum ErrorCode {
     ORDER_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "ORDER_TIME_EXPIRED", "주문 시간이 만료되었습니다."),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "INVALID_ORDER_STATUS", "결제할 수 없는 주문 상태입니다."),
 
+    // 결제 관련
+    PAYMENT_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, "PAYMENT_VERIFICATION_FAILED", "결제 검증에 실패했습니다."),
+
 
 
     // 공통
