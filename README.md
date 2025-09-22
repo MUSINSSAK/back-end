@@ -12,7 +12,8 @@
 추가로 **AI 챗봇 추천 기능**을 통해 개인화된 상품 추천과 구매 지원을 받을 수 있습니다.  
 
 **개발 기간**  
-2025.07.18(금) ~ 진행 중  
+2025.07.18(금) ~ 2025.09.26(금)
+2025.09.27(토) ~ 운영 및 보완
 
 **개발 인원**  
 AI 1명, 백엔드 2명, 프론트엔드 2명  
@@ -24,18 +25,18 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 |----------------|--------------------------------|-----------|--------|
 | 언어 & <br> 프레임워크 | Java 17, Spring Boot 3.5.3      | 최신 LTS 기반의 안정성과 풍부한 레퍼런스를 제공하는 Spring Boot 선택 | - REST API 서버 개발 <br> - 전자상거래 도메인 로직 구현 |
 | ORM/JPA | Spring Data JPA, QueryDSL | JPA로 CRUD 단순화, QueryDSL로 <br> **무한 스크롤(커서 기반) 페이징** 및 동적 쿼리 구현 | - 상품 검색/조회 API <br> - 카테고리/브랜드 정렬·필터링 |
-| DB            | MySQL 8.0                       | RDBMS 중 참고할 수 있는 레퍼런스가 가장 많은 MySQL을 선택했습니다. | - 상품 검색/조회 API <br> - 카테고리/브랜드 정렬·필터링 |
+| DB            | MySQL 8.0                       | RDBMS 중 참고할 수 있는 레퍼런스가 가장 많은 MySQL을 선택했습니다. | - DB에 연결된 API |
 | DB 마이그레이션 | Flyway                          | DB 스키마 변경 이력을 버전 관리, 협업 충돌 최소화 | - `V1__init.sql` 기반 테이블 생성 <br> - 배포 시 마이그레이션 자동 적용 |
 | 캐시/세션 <br> 관리 | Redis 7.0 | In-Memory 기반으로 세션/토큰 <br> 저장 및 분산 락 제공 | - Refresh Token 저장·검증 <br> - 로그아웃 시 토큰 삭제 <br> - 주문 동시성 제어 락 |
-| 메시징 & <br> 이벤트 <br> (진행중) | Apache Kafka + Zookeeper        | 대규모 이벤트 처리 및 비동기 확장성 확보 | - 결제 완료 <br> → 주문 확정 이벤트 발행 <br> - 실시간 알림 이벤트 처리 |
 | 보안 & <br> 인증    | Spring Security + JJWT          | JWT 기반 인증/인가로 무상태 아키텍처 구현 | - 로그인/로그아웃 API <br> - Access/Refresh  <br> → Token 발급 및 검증 |
 | API 문서화     | Springdoc (Swagger UI)          | API 테스트 및 문서화를 빠르게 지원 | - `/swagger-ui.html`을 통한  <br> 개발/QA 협업 |
-| 클라우드/ <br> 배포 <br> (진행중) | GitHub Actions, Docker Compose, AWS EC2 | GitHub Actions로 CI/CD 자동화, Docker Compose로 환경 일관성 확보, AWS EC2 프리티어로 비용 절감 | - main 브랜치 푸시 시  <br> 자동 빌드/배포 <br> - BE/DB/Redis/Kafka를 Docker Compose로 관리 <br> - AWS EC2에 배포 |
-| 모니터링 <br>(진행중) | Prometheus + Grafana | 메트릭 기반 WAS 성능/안정성 모니터링 | - Spring Boot Actuator + Micrometer → `/actuator/prometheus` 수집 <br> - Docker Compose 분리(`infra/monitoring`)로 독립 기동 <br> - 대시보드: RPS(30s), p95(1m), 5xx 에러율, Tomcat Thread Util, Hikari Util/Pending, Top5 RPS·p95 by URI <br> - 운영: Actuator 8081(내부망), 개발: 8080 |
 | 환경 변수 <br> 관리  | .env                   | 민감 정보 별도 관리로 보안 강화 | - DB 계정, JWT Secret, <br>Kakao API Key 관리 |
 | 프론트엔드 | React(ts), Vite, Axios | 빠른 번들링(Vite)과 간단한 API 호출(Axios)로 효율적인 UI/데이터 연동 | - API 호출 |
 | 빌드 도구 | Gradle | 의존성 관리 및 빌드 자동화 | - Spring Boot 프로젝트 빌드/테스트/배포 |
 | 테스트/협업 | Postman, GitHub PR | API 테스트 및 협업 표준화 | - API 시나리오 테스트 <br> - 브랜치 전략 & 코드 리뷰 |
+| 메시징 & <br> 이벤트 <br> (진행중) | Apache Kafka + Zookeeper        | 대규모 이벤트 처리 및 비동기 확장성 확보 | - 결제 완료 <br> → 주문 확정 이벤트 발행 <br> - 실시간 알림 이벤트 처리 |
+| 클라우드/ <br> 배포 <br> (진행중) | GitHub Actions, Docker Compose, AWS EC2 | GitHub Actions로 CI/CD 자동화, Docker Compose로 환경 일관성 확보, AWS EC2 프리티어로 비용 절감 | - main 브랜치 푸시 시  <br> 자동 빌드/배포 <br> - BE/DB/Redis/Kafka를 Docker Compose로 관리 <br> - AWS EC2에 배포 |
+| 모니터링 <br>(진행중) | Prometheus + Grafana | 메트릭 기반 WAS 성능/안정성 모니터링 | - Spring Boot Actuator + Micrometer → `/actuator/prometheus` 수집 <br> - Docker Compose 분리(`infra/monitoring`)로 독립 기동 <br> - 대시보드: RPS(30s), p95(1m), 5xx 에러율, Tomcat Thread Util, Hikari Util/Pending, Top5 RPS·p95 by URI <br> - 운영: Actuator 8081(내부망), 개발: 8080 |
 > *Scouter APM → Prometheus+Grafana 전환 이유*: 커스텀 지표/대시보드 구성의 유연성, CI/CD·로컬 분리 기동, 커뮤니티 대시보드/생태계 활용.
 
 ---
@@ -59,13 +60,71 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 
 ---
 
-## 🔨 서버 아키텍처 (개발/운영 구조 진행중)
+## 📂 프로젝트 구조
 
-<img width="720" height="360" alt="Architecture" src="https://github.com/user-attachments/assets/27af25ab-7cc3-4000-a13b-70e39cd8dcc1" />
+### 백엔드 구조
+
+```bash
+musinssak/
+├─ api/                          # 외부 노출 레이어 (입·출력 경계)
+│  ├─ <domain>/                  # 예: product, order, auth ...
+│  │  ├─ dto/                    # 요청/응답 DTO
+│  │  └─ facade/                 # 유즈케이스 조합/흐름 조정
+│  └─ <domain>Controller.java    # 각 도메인 컨트롤러
+│
+├─ common/                       # 전역 공통 모듈
+│  ├─ exception/                 # ErrorCode, 예외 계층, 글로벌 핸들러
+│  └─ web/                       # 공통 응답/필터/리졸버 등 웹 유틸
+│
+├─ domain/                       # 핵심 도메인 (비즈니스 규칙)
+│  ├─ <domain>/
+│  │  ├─ entity/                 # JPA 엔티티(애그리게잇 루트 중심)
+│  │  ├─ repository/             # JPA/QueryDSL 리포지토리 (도메인 관점)
+│  │  └─ service/                # 도메인 서비스(트랜잭션, 정합성)
+│  └─ ...
+│
+├─ infra/                        # 외부 시스템 어댑터 (구현 상세)
+│  ├─ external/                  # 카카오 주소검색 등 외부 API 클라이언트
+│  ├─ openapi/                   # Swagger/Springdoc(OpenAPI) 설정/그룹화
+│  ├─ security/                  # JWT, Security 설정/필터/인증 인프라
+│  └─ test/                      # 통합 테스트 보조(도커/슬라이스 등)
+
+```
+- 레이어 분리:
+api(입·출력) ↔ domain(규칙) ↔ infra(외부/구현)로 나눠 관심사 분리 & 교체 용이성 확보.
+- 도메인 중심:
+비즈니스 규칙은 domain에 집중(엔티티/서비스/리포지토리), 컨트롤러는 얇게 유지.
+- 파사드 도입:
+api/<domain>/facade가 유즈케이스 오케스트레이션과 DTO 조립 담당 → 서비스 간 순환참조 방지.
+- 외부 연동 캡슐화:
+infra/external에 외부 API 클라이언트를 모아 에러/재시도/DTO 매핑을 표준화.
+- 문서·보안 표준화:
+infra/openapi(API 문서), infra/security(JWT/필터)로 일관된 진입/문서/인증 체계 제공.
+- 테스트 재현성:
+infra/test로 통합 테스트 환경 보조(도커/슬라이스) → 안정적 회귀 검증.
+
+### 프론트엔드 구조 (Atomic Design)
+
+```bash
+src/
+ ├─ api/              # API 호출 함수
+ ├─ components/
+ │   ├─ atoms/        # input, button 등 최소 단위
+ │   ├─ molecules/    # 주소 리스트 아이템 등
+ │   ├─ organisms/    # atoms + molecules 조합 (모달 등)
+ │   ├─ templates/    # 레이아웃/섹션 단위
+ ├─ pages/            # 화면 단위
+
+```
+
+---
+
+## 🔨 서버 아키텍처 (개발/운영 구조 진행중)
 
 ### Dev (Local · Docker Compose)
 - 경로: **React Dev Server → Spring Boot App → Docker(Compose) → MySQL / Redis / Kafka / ZK / Scouter**
 - 목적: 환경 재현성, 로컬 일괄 기동, Kafka-UI & Scouter로 가시성 확보
+<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/1e3dff78-c9ba-4e9a-9d60-9b68920017f8" />
 
 ### Prod (AWS)
 - 경로: CloudFront+S3 → Nginx/ALB → EC2(App) → RDS / Redis / Kafka
@@ -73,6 +132,7 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 - **Nginx/ALB**: API 요청을 받아 EC2(App) 인스턴스로 **트래픽 분산** 처리  
 - **BE**: EC2 컨테이너에서 Spring Boot 실행  
 - **DB/캐시/메시징**: 초기엔 EC2+Compose로 시작 → 트래픽 증가 시 **RDS / ElastiCache / MSK**로 확장
+<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/9aef1c94-6cf6-41ae-99db-919d91a02fc4" />
 
 ### 배포 (CI/CD)
 - GitHub Actions로 빌드 → Docker 이미지 푸시 → EC2 자동 배포
@@ -137,25 +197,9 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 - 기능: 결제 / 취소 / 환불
 - 보안 및 상태 동기화 고려
 
-### 6. 프론트엔드 구조 (Atomic Design)
-
-```bash
-src/
- ├─ api/              # API 호출 함수
- ├─ components/
- │   ├─ atoms/        # input, button 등 최소 단위
- │   ├─ molecules/    # 주소 리스트 아이템 등
- │   ├─ organisms/    # atoms + molecules 조합 (모달 등)
- │   ├─ templates/    # 레이아웃/섹션 단위
- ├─ pages/            # 화면 단위
-
-```
-
 ---
 
 ## 🔥 BE 챌린지 & 해결 (문제 상황과 해결 과정 (성능, 동시성, 보안 등) 진행 중) 
-### Scouter
-<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/200c36f0-c372-4c70-9e2d-b4b21c495689" />
 
 ### Prometheus, Grafana 
 [프로메테우스·그라파나로 지표 확인 → 리팩토링으로 그래프 개선(클릭)](https://www.notion.so/26c927b3f196806d8b63c262ca0ef406?source=copy_link)
@@ -165,49 +209,6 @@ src/
 - Prometheus + Grafana 기반 모니터링로 전환하여 성능 분석 진행 (Spring Boot Actuator + Micrometer, /actuator/prometheus)
 - 부하 테스트 중 RPS, p95, 5xx, Tomcat Thread Util, Hikari Util/Pending 지표로 병목 식별 → 개선 아이디어 정리/적용
 - 진행 상황은 Grafana 대시보드 캡처(전/후 비교 그래프)와 함께 업데이트 예정
-
-
----
-
-## 📂 프로젝트 구조
-```bash
-musinssak/
-├─ api/                          # 외부 노출 레이어 (입·출력 경계)
-│  ├─ <domain>/                  # 예: product, order, auth ...
-│  │  ├─ dto/                    # 요청/응답 DTO
-│  │  └─ facade/                 # 유즈케이스 조합/흐름 조정
-│  └─ <domain>Controller.java    # 각 도메인 컨트롤러
-│
-├─ common/                       # 전역 공통 모듈
-│  ├─ exception/                 # ErrorCode, 예외 계층, 글로벌 핸들러
-│  └─ web/                       # 공통 응답/필터/리졸버 등 웹 유틸
-│
-├─ domain/                       # 핵심 도메인 (비즈니스 규칙)
-│  ├─ <domain>/
-│  │  ├─ entity/                 # JPA 엔티티(애그리게잇 루트 중심)
-│  │  ├─ repository/             # JPA/QueryDSL 리포지토리 (도메인 관점)
-│  │  └─ service/                # 도메인 서비스(트랜잭션, 정합성)
-│  └─ ...
-│
-├─ infra/                        # 외부 시스템 어댑터 (구현 상세)
-│  ├─ external/                  # 카카오 주소검색 등 외부 API 클라이언트
-│  ├─ openapi/                   # Swagger/Springdoc(OpenAPI) 설정/그룹화
-│  ├─ security/                  # JWT, Security 설정/필터/인증 인프라
-│  └─ test/                      # 통합 테스트 보조(도커/슬라이스 등)
-
-```
-- 레이어 분리:
-api(입·출력) ↔ domain(규칙) ↔ infra(외부/구현)로 나눠 관심사 분리 & 교체 용이성 확보.
-- 도메인 중심:
-비즈니스 규칙은 domain에 집중(엔티티/서비스/리포지토리), 컨트롤러는 얇게 유지.
-- 파사드 도입:
-api/<domain>/facade가 유즈케이스 오케스트레이션과 DTO 조립 담당 → 서비스 간 순환참조 방지.
-- 외부 연동 캡슐화:
-infra/external에 외부 API 클라이언트를 모아 에러/재시도/DTO 매핑을 표준화.
-- 문서·보안 표준화:
-infra/openapi(API 문서), infra/security(JWT/필터)로 일관된 진입/문서/인증 체계 제공.
-- 테스트 재현성:
-infra/test로 통합 테스트 환경 보조(도커/슬라이스) → 안정적 회귀 검증.
 
 ---
 
@@ -259,7 +260,7 @@ infra/test로 통합 테스트 환경 보조(도커/슬라이스) → 안정적 
 - **기능 구현 사례**
   - 상품 상세 조회 (브랜드·옵션·리뷰 집계 + Facade 패턴)
   - Swagger(OpenAPI) 문서화 (Code-First 방식)
-  - 모니터링: Scouter APM (진행 중)
+  - 모니터링: Prometheus + Grafana (진행 중)
 
 - **기타**
   - DIP 원칙 정리 (엔티티·레포지토리·서비스 참조 구조)
