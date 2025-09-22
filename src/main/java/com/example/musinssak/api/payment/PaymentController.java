@@ -2,7 +2,12 @@
 package com.example.musinssak.api.payment;
 
 import com.example.musinssak.api.payment.dto.PaymentInfoResponse;
+import com.example.musinssak.api.payment.dto.PaymentRequestRequest;
+import com.example.musinssak.api.payment.dto.PaymentRequestResponse;
+import com.example.musinssak.api.payment.dto.PaymentCompleteRequest;
+import com.example.musinssak.api.payment.dto.PaymentCompleteResponse;
 import com.example.musinssak.application.payment.PaymentQueryService;
+import com.example.musinssak.application.payment.PaymentService;
 import com.example.musinssak.common.web.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentQueryService paymentQueryService;
+    private final PaymentService paymentService;
 
     /**
      * [GET] /api/payments/{orderId}/info
@@ -52,6 +58,77 @@ public class PaymentController {
 
         // 3) 공통 응답 형태로 감싸서 반환함
         return ApiResponse.success("결제 정보 조회가 완료되었습니다.", paymentInfo);
+    }
+
+    /**
+     * [POST] /api/payments/{orderId}/request
+     * - 결제를 요청함
+     * - 주문 상태를 PAYMENT_PENDING으로 변경함
+     * - 프론트엔드에서 포트원 결제창을 띄우기 위한 정보를 반환함
+     *
+     * @param orderId 주문번호 (예: ORD20250726001)
+     * @param request 결제 요청 정보 (현재는 빈 객체)
+     * @param authentication 인증 정보 (사용자 ID 추출용)
+     * @return ApiResponse<PaymentRequestResponse> 결제 요청 정보
+     */
+    @Operation(
+            summary = "결제 요청",
+            description = "결제를 요청하고 포트원 결제창에 필요한 정보를 반환합니다. 주문 상태가 PAYMENT_PENDING으로 변경됩니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 요청이 완료되었습니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "로그인이 필요합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "주문을 찾을 수 없습니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "결제할 수 없는 주문 상태입니다.")
+    @PostMapping("/{orderId}/request")
+    public ApiResponse<PaymentRequestResponse> requestPayment(
+            @PathVariable String orderId,
+            @RequestBody PaymentRequestRequest request,
+            Authentication authentication
+    ) {
+        // 1) 인증에서 사용자 ID를 추출함
+        Long userId = getUserIdOrThrow(authentication);
+
+        // 2) 결제 요청 서비스를 호출함
+        PaymentRequestResponse paymentRequest = paymentService.requestPayment(orderId, userId);
+
+        // 3) 공통 응답 형태로 감싸서 반환함
+        return ApiResponse.success("결제 요청이 완료되었습니다.", paymentRequest);
+    }
+
+    /**
+     * [POST] /api/payments/{paymentId}/complete
+     * - 결제 완료를 처리함
+     * - 포트원 API로 실제 결제 상태를 검증함
+     * - 검증 성공 시 주문 상태를 PAID로 변경함
+     *
+     * @param paymentId 포트원 결제 ID (예: ORD20250921160245-d09d_pay_4f9b10ab)
+     * @param request 결제 완료 요청 정보 (포트원 거래 ID 등)
+     * @param authentication 인증 정보 (사용자 ID 추출용)
+     * @return ApiResponse<PaymentCompleteResponse> 결제 완료 정보
+     */
+    @Operation(
+            summary = "결제 완료",
+            description = "결제 완료를 처리하고 포트원 API로 실제 결제 상태를 검증합니다. 검증 성공 시 주문 상태가 PAID로 변경됩니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 완료 처리가 완료되었습니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "로그인이 필요합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "결제 정보를 찾을 수 없습니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "결제 검증에 실패했습니다.")
+    @PostMapping("/{paymentId}/complete")
+    public ApiResponse<PaymentCompleteResponse> completePayment(
+            @PathVariable String paymentId,
+            @RequestBody PaymentCompleteRequest request,
+            Authentication authentication
+    ) {
+        // 1) 인증에서 사용자 ID를 추출함
+        Long userId = getUserIdOrThrow(authentication);
+
+        // 2) 결제 완료 서비스를 호출함
+        PaymentCompleteResponse paymentComplete = paymentService.completePayment(
+                paymentId, userId, request.getTransactionId());
+
+        // 3) 공통 응답 형태로 감싸서 반환함
+        return ApiResponse.success("결제 완료 처리가 완료되었습니다.", paymentComplete);
     }
 
     /**

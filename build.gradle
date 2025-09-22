@@ -9,6 +9,8 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
+
+
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
@@ -87,6 +89,9 @@ dependencies {
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.2' // ← 추가
     // (선택) 버전 충돌 시 core만 직접 써도 됨
     // implementation 'org.redisson:redisson:3.27.2'
+
+    // HTTP 클라이언트 (포트원 API 직접 호출용)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 }
 

@@ -77,3 +77,9 @@ kakao:
   local:
     base-url: https://dapi.kakao.com  # 카카오 주소검색 API 기본 URL
     rest-api-key: ${KAKAO_REST_API_KEY}  # .env에서 REST API 키를 불러옴
+
+# 포트원 V2 API 설정
+portone:
+  api-secret: ${PORTONE_API_SECRET}    # .env에서 포트원 API Secret을 불러옴
+  store-id: ${PORTONE_STORE_ID}        # .env에서 포트원 Store ID를 불러옴
+  channel-key: ${PORTONE_CHANNEL_KEY}  # .env에서 포트원 채널 키를 불러옴

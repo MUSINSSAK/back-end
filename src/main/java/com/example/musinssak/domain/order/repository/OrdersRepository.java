@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import com.example.musinssak.domain.order.entity.OrderStatus;
 
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
@@ -39,4 +40,23 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
            and o.status = com.example.musinssak.domain.order.entity.OrderStatus.CREATED
     """)
     int markPaymentExpiredNow(Long orderId);
+
+    /** PAYMENT_PENDING 상태이면서 만료된 주문을 PAYMENT_EXPIRED 로 일괄 변경(스케줄러용) */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Orders o
+           set o.status = com.example.musinssak.domain.order.entity.OrderStatus.PAYMENT_EXPIRED
+         where o.status = com.example.musinssak.domain.order.entity.OrderStatus.PAYMENT_PENDING
+           and o.expiredAt <= :now
+    """)
+    int markPaymentPendingExpired(LocalDateTime now);
+
+    /** 주문 상태를 변경함 (결제 진행 중 등) */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Orders o
+           set o.status = :newStatus
+         where o.id = :orderId
+    """)
+    int updateOrderStatus(Long orderId, OrderStatus newStatus);
 }
