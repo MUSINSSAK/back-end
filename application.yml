@@ -1,5 +1,8 @@
 server:
   port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true   # ← Tomcat 스레드/세션 지표가 생성되도록 MBean 등록
 
 spring:
   flyway: # Flyway 활성화
@@ -23,8 +26,8 @@ spring:
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: validate # Flyway가 생성한 테이블 구조가 맞는지만 검사, none : init.sql 테이블 수동 생성, update : 자동으로 테이블 생성/수정, validate : init.sql로 만든 테이블과 맞는지만 확인하고, insert 가능
-    show-sql: true # 콘솔에 SQL 출력됨
+      ddl-auto: validate
+    show-sql: true
     properties:
       hibernate:
         format_sql: true # SQL 예쁘게 출력
@@ -47,6 +50,19 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+  # Email(JavaMailSender) Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 # Swagger Configuration -> 배포 전(application.yml 하나로 유지)
 springdoc:
   api-docs:
@@ -68,13 +84,47 @@ logging:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET} # 여기에 매우 길고 복잡한 랜덤 시크릿 값을 넣으세요_예:5xZrJc... (Base64 가능)
-  access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}     # 기본 15분
-  refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}  # 기본 14일
+  secret: ${JWT_SECRET}
+  access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}
+  refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}
 
 # 주소검색 API 설정
 kakao:
   local:
+    base-url: https://dapi.kakao.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+
+# 개발 모니터링 (운영: 서비스는 8080 유지, Actuator만 8081로 분리)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [health, info, prometheus]   # 리스트 형태 권장
+  endpoint:
+    health:
+      show-details: "always"
+
+  metrics:
+    enable:
+      tomcat: true        # ← 톰캣 메트릭 바인더 활성화(보통 기본 true지만 명시 권장)
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true      # 히스토그램 ON (HTTP 서버)
+      slo:
+        http:
+          server:
+            # 소수초(0.1s, 0.3s ...) 대신 정수 Duration 사용
+            requests: [ 100ms, 300ms, 500ms, 1s, 3s ]
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+
     base-url: https://dapi.kakao.com  # 카카오 주소검색 API 기본 URL
     rest-api-key: ${KAKAO_REST_API_KEY}  # .env에서 REST API 키를 불러옴
 

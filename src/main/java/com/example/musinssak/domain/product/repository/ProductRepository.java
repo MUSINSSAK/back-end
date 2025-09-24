@@ -1,6 +1,7 @@
 package com.example.musinssak.domain.product.repository;
 
 import com.example.musinssak.domain.product.entity.Product;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     // 상품 id로 상품 + 브랜드 조회
     @Query("select p from Product p join fetch p.brand where p.id = :id")
     Optional<Product> findByIdWithBrand(@Param("id") Long id);
+
+    boolean existsById(@NonNull Long id);
 }
