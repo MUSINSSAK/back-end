@@ -1,5 +1,6 @@
 package com.example.musinssak.domain.review.entity;
 
+// [수정] import 경로에 .entity 추가
 import com.example.musinssak.domain.product.entity.Product;
 import com.example.musinssak.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -19,17 +20,14 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // reviews.user_id -> users.id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // reviews.product_id -> products.id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    // 1~5 점(제약은 DB/검증단에서 관리)
     @Column(nullable = false)
     private Integer rating;
 
@@ -42,7 +40,6 @@ public class Review {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // 필요할 때 사용할 수 있는 생성자(팩토리)
     public Review(User user, Product product, Integer rating, String content,
                   LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.user = user;
@@ -50,6 +47,12 @@ public class Review {
         this.rating = rating;
         this.content = content;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    // [추가] 리뷰 내용과 수정 시간을 업데이트하는 메소드
+    public void updateContent(String content, LocalDateTime updatedAt) {
+        this.content = content;
         this.updatedAt = updatedAt;
     }
 }
