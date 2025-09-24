@@ -1,3 +1,30 @@
+
+-----
+
+# back-end
+
+## 🛠️ 기술 스택 (Tech Stack)
+
+  * **Language**: Java 17
+  * **Framework**: Spring Boot 3.x
+  * **Data**: Spring Data JPA, QueryDSL
+  * **Database**: MySQL 8.0
+  * **DB Migration**: Flyway
+  * **Build**: Gradle
+  * **Container**: Docker
+
+-----
+
+## 🚀 개발 환경 설정 (Setup)
+
+### 1\. 사전 준비 (Prerequisites)
+
+  * [Docker Desktop](https://www.docker.com/products/docker-desktop)
+  * JDK 17
+  * IntelliJ IDEA 또는 선호하는 IDE
+
+### 2\. 프로젝트 클론
+=======
 # 🛍️ MUSINSSAK (Spring Boot + React)
 **설계가 명확하면, "코드를 치는 행위" 는 목표를 달성하는 "수단" 이 된다.**
 
