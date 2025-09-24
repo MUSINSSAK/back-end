@@ -2,13 +2,14 @@
 package com.example.musinssak.domain.order.repository;
 
 import com.example.musinssak.domain.order.entity.Orders;
+import com.example.musinssak.domain.order.entity.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.List; // [추가] List를 import 합니다.
 import java.util.Optional;
-import com.example.musinssak.domain.order.entity.OrderStatus;
 
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
@@ -59,4 +60,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
          where o.id = :orderId
     """)
     int updateOrderStatus(Long orderId, OrderStatus newStatus);
+
+    /** 특정 사용자의 특정 상태 주문 목록 조회 (리뷰 작성 가능 상품 조회용) */
+    List<Orders> findByUserIdAndStatus(Long userId, OrderStatus status);
 }
