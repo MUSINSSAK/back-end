@@ -15,7 +15,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     /** 주문아이템을 상품/브랜드/옵션까지 조인해서 화면용으로 가져옴(내 주문만) */
     @Query("""
         select new com.example.musinssak.domain.order.repository.view.OrderItemRow(
-            oi.productId,
+            oi.product.id,
             p.name,
             b.name,
             po.size,

@@ -100,7 +100,7 @@ public class OrderFacadeImpl implements OrderFacade {
 
             // 5-5) 주문 아이템 스냅샷
             orderItems.add(OrderItem.builder()
-                    .productId(product.getId())
+                    .product(product)
                     .productOptionId(optionId)
                     .quantity(qty)
                     .price(price)

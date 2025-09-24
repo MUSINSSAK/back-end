@@ -1,42 +1,41 @@
 package com.example.musinssak.domain.order.entity;
 
+// [추가] Product 엔티티를 import 합니다.
+import com.example.musinssak.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * 주문의 개별 상품 스냅샷 엔티티임
- * - DB 테이블(order_items) 컬럼과 1:1로 맞춤
- * - 컬럼: id, order_id, product_id, product_option_id, quantity, price, discount_price
- */
 @Entity
 @Table(name = "order_items")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA가 씀
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 기본키임
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     @Setter
-    private Orders order; // 소속 주문임
+    private Orders order;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId; // 상품 id임
+    // [수정] productId 필드를 실제 Product 엔티티와의 관계로 변경합니다.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "product_option_id", nullable = false)
-    private Long productOptionId; // 옵션 id임
+    private Long productOptionId;
 
     @Column(name = "quantity", nullable = false)
-    private int quantity; // 수량임
+    private int quantity;
 
     @Column(name = "price", nullable = false)
-    private int price; // 원가 단가임
+    private int price;
 
     @Column(name = "discount_price", nullable = false)
-    private int discountPrice; // 할인 단가임
+    private int discountPrice;
 }
