@@ -1,13 +1,16 @@
 server:
   port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 spring:
-  flyway: # Flyway 활성화
+  flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
   config:
-    import: optional:file:.env[.properties]  # .env 파일 읽기
+    import: optional:file:.env[.properties]
   application:
     name: musinsa-shop
 
@@ -15,27 +18,23 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3300/musinsa_shop?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    # 공개키 요청을 허용 : allowPublicKeyRetrieval=true
-    # url: jdbc:mysql://localhost:3300/musinsa_shop?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-    username: ${DB_USERNAME} # MUSINSSAK / root
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: validate # Flyway가 생성한 테이블 구조가 맞는지만 검사, none : init.sql 테이블 수동 생성, update : 자동으로 테이블 생성/수정, validate : init.sql로 만든 테이블과 맞는지만 확인하고, insert 가능
-    show-sql: true # 콘솔에 SQL 출력됨
+      ddl-auto: validate
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true # SQL 예쁘게 출력
-        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
 
   # Redis Configuration
   data:
     redis:
       host: localhost
       port: 6379
-      # host: redis # 앱도 도커에서 뜬다면 이걸로 (compose 서비스명)
 
   # Kafka Configuration
   kafka:
@@ -47,10 +46,31 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+  # Email(JavaMailSender) Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 # Swagger Configuration
 springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
   swagger-ui:
+    enabled: true
     path: /swagger-ui.html
+    doc-expansion: none
+    display-request-duration: true
+    operations-sorter: alpha
+    tags-sorter: alpha
 
 # Logging Configuration
 logging:
@@ -60,12 +80,40 @@ logging:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET} # 여기에 매우 길고 복잡한 랜덤 시크릿 값을 넣으세요_예:5xZrJc... (Base64 가능)
-  access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}     # 기본 15분
-  refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}  # 기본 14일
+  secret: ${JWT_SECRET}
+  access-expire-ms: ${JWT_ACCESS_EXPIRE_MS}
+  refresh-expire-ms: ${JWT_REFRESH_EXPIRE_MS}
 
 # 주소검색 API 설정
 kakao:
   local:
-    base-url: https://dapi.kakao.com  # 카카오 주소검색 API 기본 URL
-    rest-api-key: ${KAKAO_REST_API_KEY}  # .env에서 REST API 키를 불러옴
+    base-url: https://dapi.kakao.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+
+# 개발 모니터링
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [health, info, prometheus]
+  endpoint:
+    health:
+      show-details: "always"
+  metrics:
+    enable:
+      tomcat: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+      slo:
+        http:
+          server:
+            requests: [ 100ms, 300ms, 500ms, 1s, 3s ]
+  prometheus:
+    metrics:
+      export:
+        enabled: true

@@ -24,12 +24,9 @@ public class ChatService {
         this.productRepository = productRepository;
     }
 
-    public ChatResponse getChatbotResponse(String query, String userId) {
-        // 1. (생략) 사용자 정보 조회 및 AI 서버 요청 DTO 생성
-        AiServerRequest.UserInfo userInfo = new AiServerRequest.UserInfo(
-                userId, 175, 65, "male", List.of("P002"), List.of("P001")
-        );
-        AiServerRequest aiRequest = new AiServerRequest(query, userInfo);
+    public ChatResponse getChatbotResponse(String query) {
+
+        AiServerRequest aiRequest = new AiServerRequest(query);
 
         // 2. (생략) AI 서버 호출
         AiServerResponse aiResponse = aiServerWebClient.post()

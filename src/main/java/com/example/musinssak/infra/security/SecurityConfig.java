@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트
 
                         /* ---------- ① 모두(permitAll) ---------- */
                         // 회원가입/로그인/비번찾기 3단계
@@ -69,6 +69,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/questions/types").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/address/search").permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
+
                         // Swagger / OpenAPI
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
@@ -80,20 +82,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
 
                         // 내 정보 / 배송지 / 계정 보안
-                        .requestMatchers("/api/users/me/**").permitAll()
+                        .requestMatchers("/api/users/me/**").authenticated()
 
                         // 상품 문의 등록(POST만 보호)
-                        .requestMatchers(HttpMethod.POST, "/api/products/*/questions").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/*/questions").authenticated()
 
                         // 찜/최근 본 상품
-                        .requestMatchers("/api/users/me/wishlist/**").permitAll()
-                        .requestMatchers("/api/users/me/recent-products/**").permitAll()
+                        .requestMatchers("/api/users/me/wishlist/**").authenticated()
+                        .requestMatchers("/api/users/me/recent-products/**").authenticated()
 
                         // 장바구니
-                        .requestMatchers("/api/cart/**").permitAll()
+                        .requestMatchers("/api/cart/**").authenticated()
 
                         // 주문
-                        .requestMatchers("/api/orders/**").permitAll()
+                        .requestMatchers("/api/orders/**").authenticated()
+
+                        // 모니터링
+                        .requestMatchers("/actuator/health", "/actuator/prometheus").permitAll()
 
                         /* ---------- ③ 그 외 ---------- */
                         .anyRequest().permitAll() // 개발 단계: 나머지는 공개. 필요 시 authenticated()로 전환
