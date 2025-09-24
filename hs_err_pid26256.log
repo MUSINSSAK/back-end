@@ -1,0 +1,283 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffa1a2f219e, pid=26256, tid=30592
+#
+# JRE version:  (17.0.12+8) (build )
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (17.0.12+8-LTS-286, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# Problematic frame:
+# V  [jvm.dll+0x2c219e]
+#
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew C:\Users\haak1\Desktop\back-end\\gradle\wrapper\gradle-wrapper.jar build
+
+Host: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz, 8 cores, 19G,  Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+Time: Fri Aug 29 23:11:34 2025  Windows 11 , 64 bit Build 22621 (10.0.22621.5415) elapsed time: 0.340866 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000028273e33cb0):  JavaThread "Unknown thread" [_thread_in_vm, id=30592, stack(0x000000929da00000,0x000000929db00000)]
+
+Stack: [0x000000929da00000,0x000000929db00000],  sp=0x000000929daff260,  free space=1020k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x2c219e]
+V  [jvm.dll+0x2c2605]
+V  [jvm.dll+0x6269d6]
+V  [jvm.dll+0x626c03]
+V  [jvm.dll+0x6260e3]
+V  [jvm.dll+0x621e18]
+V  [jvm.dll+0x7aca55]
+V  [jvm.dll+0x367591]
+V  [jvm.dll+0x78b999]
+V  [jvm.dll+0x3ec83f]
+V  [jvm.dll+0x3ee471]
+C  [jli.dll+0x5297]
+C  [ucrtbase.dll+0x29333]
+C  [KERNEL32.DLL+0x1259d]
+C  [ntdll.dll+0x5af78]
+
+
+siginfo: EXCEPTION_ACCESS_VIOLATION (0xc0000005), reading address 0x0000000000000000
+
+
+Registers:
+RAX=0x0000bc99947c4d49, RBX=0x0000000000000000, RCX=0x0000000000000000, RDX=0x00007ffa1a925d01
+RSP=0x000000929daff260, RBP=0x0000000000000001, RSI=0x000002820f8f5348, RDI=0x0000000000000000
+R8 =0x0000000000000001, R9 =0x0000000000000001, R10=0x0000000000000000, R11=0x0000000000000246
+R12=0x0000000000000002, R13=0x0000028271bbe4d0, R14=0x0000000000000001, R15=0x000002820f000000
+RIP=0x00007ffa1a2f219e, EFLAGS=0x0000000000010246
+
+
+Top of Stack: (sp=0x000000929daff260)
+0x000000929daff260:   000002820fbd0000 0000000800000000
+0x000000929daff270:   0000000800bd0000 000002820f000000
+0x000000929daff280:   000002820fbd0000 0000027a0f000000
+0x000000929daff290:   000000929daff3b0 0000000000000001
+0x000000929daff2a0:   0000bc99947c4ec9 0000028273ebb450
+0x000000929daff2b0:   0000bc99947c4d49 0000028273ebb450
+0x000000929daff2c0:   0000000000000000 00007ffa1a2f2605
+0x000000929daff2d0:   000002820f000000 0000000000000000
+0x000000929daff2e0:   0000028273ebb450 0000000000000000
+0x000000929daff2f0:   000002820f8f5340 0000000000000001
+0x000000929daff300:   000002820f000000 0000000001000000
+0x000000929daff310:   0000000000000000 0000000000010000
+0x000000929daff320:   0000000000001000 ffffffff00000000
+0x000000929daff330:   0000000000000000 0000000000000003
+0x000000929daff340:   0000bc99947c4df9 0000000000000000
+0x000000929daff350:   0000028271bbe4d0 0000000000000000 
+
+Instructions: (pc=0x00007ffa1a2f219e)
+0x00007ffa1a2f209e:   8e 1d 63 00 e8 29 30 f8 ff 48 8b 0d f2 5d 83 00
+0x00007ffa1a2f20ae:   48 85 c9 74 22 44 0f b6 83 41 02 00 00 48 8d 0d
+0x00007ffa1a2f20be:   3e 4c 63 00 0f b6 93 40 02 00 00 e8 62 4f de ff
+0x00007ffa1a2f20ce:   48 8b 0d cb 5d 83 00 0f b6 05 3b 6e 84 00 38 83
+0x00007ffa1a2f20de:   40 02 00 00 75 60 0f b6 05 6d 6e 84 00 38 83 41
+0x00007ffa1a2f20ee:   02 00 00 75 51 80 bb a1 03 00 00 00 75 1f c6 05
+0x00007ffa1a2f20fe:   ed 29 7f 00 00 48 85 c9 74 13 48 8d 0d f1 4c 63
+0x00007ffa1a2f210e:   00 e8 1c 4f de ff 48 8b 0d 85 5d 83 00 80 bb a2
+0x00007ffa1a2f211e:   03 00 00 00 75 18 c6 05 c6 29 7f 00 00 48 85 c9
+0x00007ffa1a2f212e:   74 0c 48 8d 0d 39 4d 63 00 e8 f4 4e de ff b0 01
+0x00007ffa1a2f213e:   48 83 c4 20 5b c3 48 8d 0d 15 4c 63 00 e8 c0 d5
+0x00007ffa1a2f214e:   ff ff 32 c0 48 83 c4 20 5b c3 cc cc cc cc cc cc
+0x00007ffa1a2f215e:   cc cc 48 89 5c 24 10 48 89 6c 24 18 48 89 74 24
+0x00007ffa1a2f216e:   20 57 48 83 ec 60 48 8b 05 4d f0 80 00 48 33 c4
+0x00007ffa1a2f217e:   48 89 44 24 50 80 3d 21 0b 7e 00 00 0f b6 ea 48
+0x00007ffa1a2f218e:   8b f1 74 17 80 39 00 75 12 48 8b 0d 3a c1 83 00
+0x00007ffa1a2f219e:   48 8b 01 ff 50 20 48 8b d8 eb 08 48 8b 59 18 48
+0x00007ffa1a2f21ae:   83 c3 04 48 83 3d 27 c2 83 00 00 40 b7 01 74 0f
+0x00007ffa1a2f21be:   48 8b d3 48 8d 0d b8 37 63 00 e8 23 b4 f2 ff 48
+0x00007ffa1a2f21ce:   8d 54 24 20 48 8b cb e8 c6 6a 3b 00 85 c0 74 19
+0x00007ffa1a2f21de:   40 84 ed 74 14 48 8b d3 48 8d 0d bb 37 63 00 e8
+0x00007ffa1a2f21ee:   1e d5 ff ff 40 32 ff eb 7a 80 3e 02 75 20 48 8b
+0x00007ffa1a2f21fe:   cb e8 fc 0f 3b 00 84 c0 75 69 48 8b d3 48 8d 0d
+0x00007ffa1a2f220e:   c6 37 63 00 e8 f9 d4 ff ff 40 32 ff eb 55 48 8b
+0x00007ffa1a2f221e:   56 08 4c 8b 44 24 40 48 85 d2 74 05 49 3b d0 75
+0x00007ffa1a2f222e:   0b 48 63 44 24 34 48 39 46 10 74 37 40 32 ff 40
+0x00007ffa1a2f223e:   38 3d 6a 6e 84 00 74 1c 49 3b d0 48 8d 05 a8 37
+0x00007ffa1a2f224e:   63 00 48 8d 0d b9 37 63 00 48 0f 45 c8 e8 b0 d4
+0x00007ffa1a2f225e:   ff ff eb 0f 48 8b d3 48 8d 0d c4 37 63 00 e8 9f
+0x00007ffa1a2f226e:   d4 ff ff 80 3d 36 6e 84 00 00 74 10 40 84 ff 75
+0x00007ffa1a2f227e:   0b c6 05 ab b7 85 00 01 b0 01 eb 04 40 0f b6 c7
+0x00007ffa1a2f228e:   48 8b 4c 24 50 48 33 cc e8 b5 42 57 00 4c 8d 5c 
+
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffa1aae7a18, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x0000028273e536d0 GCTaskThread "GC Thread#0" [stack: 0x000000929dc00000,0x000000929dd00000] [id=41592]
+  0x0000028273e56e40 ConcurrentGCThread "G1 Main Marker" [stack: 0x000000929dd00000,0x000000929de00000] [id=14880]
+  0x0000028273e58860 ConcurrentGCThread "G1 Conc#0" [stack: 0x000000929de00000,0x000000929df00000] [id=37256]
+  0x0000028273eb7f30 ConcurrentGCThread "G1 Refine#0" [stack: 0x000000929df00000,0x000000929e000000] [id=20624]
+  0x0000028273eb8960 ConcurrentGCThread "G1 Service" [stack: 0x000000929e000000,0x000000929e100000] [id=2704]
+
+=>0x0000028273e33cb0 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=30592, stack(0x000000929da00000,0x000000929db00000)]
+
+Threads with active compile tasks:
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap address: 0x00000000fc000000, size: 64 MB, Compressed Oops mode: 32-bit
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+ CPUs: 8 total, 8 available
+ Memory: 20259M
+ Large Page Support: Disabled
+ NUMA Support: Disabled
+ Compressed Oops: Enabled (32-bit)
+ Heap Region Size: 1M
+ Heap Min Capacity: 64M
+ Heap Initial Capacity: 64M
+ Heap Max Capacity: 64M
+ Pre-touch: Disabled
+ Parallel Workers: 8
+ Concurrent Workers: 2
+ Concurrent Refinement Workers: 8
+ Periodic GC: Disabled
+
+Heap:
+ garbage-first heap   total 65536K, used 0K [0x00000000fc000000, 0x0000000100000000)
+  region size 1024K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffa1a703859]
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (2 events):
+Event: 0.127 Loaded shared library C:\Program Files\Java\jdk-17\bin\java.dll
+Event: 0.135 Loaded shared library C:\Program Files\Java\jdk-17\bin\zip.dll
+
+
+Dynamic libraries:
+0x00007ff738060000 - 0x00007ff738070000 	C:\Program Files\Java\jdk-17\bin\java.exe
+0x00007ffab6290000 - 0x00007ffab64a7000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007ffab54b0000 - 0x00007ffab5574000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007ffab39b0000 - 0x00007ffab3d82000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007ffab3890000 - 0x00007ffab39a1000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ffa7fc80000 - 0x00007ffa7fc99000 	C:\Program Files\Java\jdk-17\bin\jli.dll
+0x00007ffab4800000 - 0x00007ffab48b1000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007ffab48c0000 - 0x00007ffab4967000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007ffab5c10000 - 0x00007ffab5cb8000 	C:\WINDOWS\System32\sechost.dll
+0x00007ffab3720000 - 0x00007ffab3748000 	C:\WINDOWS\System32\bcrypt.dll
+0x00007ffab5d10000 - 0x00007ffab5e24000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007ffab3f10000 - 0x00007ffab40c1000 	C:\WINDOWS\System32\USER32.dll
+0x00007ffab3d90000 - 0x00007ffab3db6000 	C:\WINDOWS\System32\win32u.dll
+0x00007ffab5f70000 - 0x00007ffab5f99000 	C:\WINDOWS\System32\GDI32.dll
+0x00007ffab3dc0000 - 0x00007ffab3ee3000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007ffab3490000 - 0x00007ffab352a000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007ffa7fb20000 - 0x00007ffa7fb3b000 	C:\Program Files\Java\jdk-17\bin\VCRUNTIME140.dll
+0x00007ffa9bfd0000 - 0x00007ffa9c26b000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.5547_none_27104afb73855772\COMCTL32.dll
+0x00007ffaa5e80000 - 0x00007ffaa5e8a000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007ffab5cc0000 - 0x00007ffab5cf1000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007ffa8c3d0000 - 0x00007ffa8c3dc000 	C:\Program Files\Java\jdk-17\bin\vcruntime140_1.dll
+0x00007ffa4fd20000 - 0x00007ffa4fdae000 	C:\Program Files\Java\jdk-17\bin\msvcp140.dll
+0x00007ffa1a030000 - 0x00007ffa1ac10000 	C:\Program Files\Java\jdk-17\bin\server\jvm.dll
+0x00007ffab5d00000 - 0x00007ffab5d08000 	C:\WINDOWS\System32\PSAPI.DLL
+0x00007ffaab700000 - 0x00007ffaab709000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x00007ffab5580000 - 0x00007ffab55f1000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007ffaab5b0000 - 0x00007ffaab5e4000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007ffab23b0000 - 0x00007ffab23c8000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007ffa5f670000 - 0x00007ffa5f67a000 	C:\Program Files\Java\jdk-17\bin\jimage.dll
+0x00007ffab0840000 - 0x00007ffab0a73000 	C:\WINDOWS\SYSTEM32\DBGHELP.DLL
+0x00007ffab40d0000 - 0x00007ffab4463000 	C:\WINDOWS\System32\combase.dll
+0x00007ffab53d0000 - 0x00007ffab54a7000 	C:\WINDOWS\System32\OLEAUT32.dll
+0x00007ffa964f0000 - 0x00007ffa96522000 	C:\WINDOWS\SYSTEM32\dbgcore.DLL
+0x00007ffab3350000 - 0x00007ffab33cb000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007ffa5f640000 - 0x00007ffa5f665000 	C:\Program Files\Java\jdk-17\bin\java.dll
+0x00007ffa4fd00000 - 0x00007ffa4fd18000 	C:\Program Files\Java\jdk-17\bin\zip.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Java\jdk-17\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.5547_none_27104afb73855772;C:\Program Files\Java\jdk-17\bin\server
+
+VM Arguments:
+jvm_args: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew 
+java_command: C:\Users\haak1\Desktop\back-end\\gradle\wrapper\gradle-wrapper.jar build
+java_class_path (initial): C:\Users\haak1\Desktop\back-end\\gradle\wrapper\gradle-wrapper.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 2                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 8                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 67108864                                  {product} {command line}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 67108864                                  {product} {command line}
+   size_t MaxNewSize                               = 39845888                                  {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 67108864                                  {product} {command line}
+    uintx NonNMethodCodeHeapSize                   = 5839372                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122909434                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122909434                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 67108864                               {manageable} {ergonomic}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk-17
+PATH=%JAVA_HOME%\bin;C:\Program Files (x86)\VMware\VMware Player\bin\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\dotnet\;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\Users\haak1\AppData\Roaming\Python\Scripts\poetry;C:\MinGW\bin;C:\Program Files\MongoDB\Server\8.0\bin;C:\Users\haak1\cmder;C:\Program Files\Bandizip\;C:\Program Files\dotnet\;C:\Users\haak1\AppData\Local\nvm;C:\nvm4w\nodejs;C:\Users\haak1\.local\bin;C:\Users\haak1\.pyenv\pyenv-win\bin;C:\Users\haak1\.pyenv\pyenv-win\shims;C:\Users\haak1\AppData\Local\Programs\Python\Python312\Scripts\;C:\Users\haak1\AppData\Local\Programs\Python\Python312\;C:\Users\haak1\miniconda3;C:\Users\haak1\miniconda3\Library\mingw-w64\bin;C:\Users\haak1\miniconda3\Library\usr\bin;C:\Users\haak1\miniconda3\Library\bin;C:\Users\haak1\miniconda3\Scripts;C:\Users\haak1\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm Community Edition 2023.2\bin;C:\Users\haak1\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\haak1\Desktop\boostcamp\source;C:\Users\haak1\AppData\Roaming\Python\Scripts\poetry;C:\Users\haak1\AppData\Local\Programs\Ollama;C:\Users\haak1\AppData\Local\Programs\Espanso;C:\Users\haak1\AppData\Local\Muse Hub\lib;C:\Users\haak1\AppData\Local\JetBrains\Toolbox\scripts;C:\Program Files\MySQL\MySQL Server 9.3\bin;C:\Users\haak1\AppData\Local\nvm;C:\nvm4w\nodejs;
+USERNAME=haak1
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 140 Stepping 1, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+OS uptime: 7 days 5:02 hours
+Hyper-V role detected
+
+CPU: total 8 (initial active 8) (4 cores per cpu, 2 threads per core) family 6 model 140 stepping 1 microcode 0x8a, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, avx512f, avx512dq, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, clwb, avx512_vbmi2, avx512_vbmi, hv
+
+Memory: 4k page, system-wide physical 20259M (6888M free)
+TotalPageFile size 25103M (AvailPageFile size 9138M)
+current process WorkingSet (physical memory assigned to process): 24M, peak: 24M
+current process commit charge ("private bytes"): 138M, peak: 138M
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (17.0.12+8-LTS-286) for windows-amd64 JRE (17.0.12+8-LTS-286), built on Jun  5 2024 06:46:59 by "mach5one" with MS VC++ 17.6 (VS2022)
+
+END.
