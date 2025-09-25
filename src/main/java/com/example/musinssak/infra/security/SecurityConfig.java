@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트
 
                         /* ---------- ① 모두(permitAll) ---------- */
                         // 회원가입/로그인/비번찾기 3단계
@@ -68,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/products/*/questions").permitAll()// 문의 목록(조회만 공개)
                         .requestMatchers(HttpMethod.GET, "/api/questions/types").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/address/search").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
 
                         // Swagger / OpenAPI
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
