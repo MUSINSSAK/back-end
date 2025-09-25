@@ -10,8 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List; // [추가] List를 import 합니다.
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-public interface OrdersRepository extends JpaRepository<Orders, Long> {
+public interface OrdersRepository extends JpaRepository<Orders, Long>, OrdersRepositoryCustom {
 
     /** 주문번호로 단건 찾음 */
     Optional<Orders> findByOrderNumber(String orderNumber);
