@@ -11,7 +11,7 @@ public class WebClientConfig {
     @Bean
     public WebClient aiServerWebClient() {
         return WebClient.builder()
-                .baseUrl("http://ai-server:8000") // 도커 서비스 이름 사용
+                .baseUrl("http://localhost:8000") // 도커 서비스 이름 사용
                 .build();
     }
 }

@@ -80,36 +80,36 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
 
   # --- Java 애플리케이션 서비스 ---
-  app:
-    build:
-      context: .
-    container_name: musinsa-app-2
-    restart: always
-    ports:
-      - "8080:8080"
-    env_file: # 👈 이 부분을 추가해주세요.
-      - ./.env
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/musinsa_shop?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=679
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ACCESS_EXPIRE_MS=${JWT_ACCESS_EXPIRE_MS}
-      - JWT_REFRESH_EXPIRE_MS=${JWT_REFRESH_EXPIRE_MS}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - SPRING_MAIL_HOST=smtp.gmail.com
-      - SPRING_MAIL_PORT=587
-      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
-      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-    depends_on:
-      - mysql
-      - redis
-      - kafka
-      - ai-server
+#  app:
+#    build:
+#      context: .
+#    container_name: musinsa-app-2
+#    restart: always
+#    ports:
+#      - "8080:8080"
+#    env_file: # 👈 이 부분을 추가해주세요.
+#      - ./.env
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/musinsa_shop?useSSL=false&allowPublicKeyRetrieval=true
+#      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+#      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+#      - SPRING_REDIS_HOST=redis
+#      - SPRING_REDIS_PORT=679
+#      - JWT_SECRET=${JWT_SECRET}
+#      - JWT_ACCESS_EXPIRE_MS=${JWT_ACCESS_EXPIRE_MS}
+#      - JWT_REFRESH_EXPIRE_MS=${JWT_REFRESH_EXPIRE_MS}
+#      - OPENAI_API_KEY=${OPENAI_API_KEY}
+#      - SPRING_MAIL_HOST=smtp.gmail.com
+#      - SPRING_MAIL_PORT=587
+#      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+#      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+#    depends_on:
+#      - mysql
+#      - redis
+#      - kafka
+#      - ai-server
 
 volumes:
   mysql_data:
