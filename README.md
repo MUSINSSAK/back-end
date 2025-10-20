@@ -1,30 +1,3 @@
-
------
-
-# back-end
-
-## 🛠️ 기술 스택 (Tech Stack)
-
-  * **Language**: Java 17
-  * **Framework**: Spring Boot 3.x
-  * **Data**: Spring Data JPA, QueryDSL
-  * **Database**: MySQL 8.0
-  * **DB Migration**: Flyway
-  * **Build**: Gradle
-  * **Container**: Docker
-
------
-
-## 🚀 개발 환경 설정 (Setup)
-
-### 1\. 사전 준비 (Prerequisites)
-
-  * [Docker Desktop](https://www.docker.com/products/docker-desktop)
-  * JDK 17
-  * IntelliJ IDEA 또는 선호하는 IDE
-
-### 2\. 프로젝트 클론
-=======
 # 🛍️ MUSINSSAK (Spring Boot + React)
 **설계가 명확하면, "코드를 치는 행위" 는 목표를 달성하는 "수단" 이 된다.**
 
@@ -88,11 +61,14 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 
 ## 🔨 서버 아키텍처 (개발/운영 구조 진행중)
 
-<img width="720" height="360" alt="Architecture" src="https://github.com/user-attachments/assets/27af25ab-7cc3-4000-a13b-70e39cd8dcc1" />
-
 ### Dev (Local · Docker Compose)
 - 경로: **React Dev Server → Spring Boot App → Docker(Compose) → MySQL / Redis / Kafka / ZK / Scouter**
 - 목적: 환경 재현성, 로컬 일괄 기동, Kafka-UI & Scouter로 가시성 확보
+- **AI Server (로컬)**: Spring Boot App → *(Docker 네트워크 내부)* → `ai-server:8000`  
+  - WebClient baseUrl: `http://ai-server:8000` (Compose 서비스명 사용)  
+  - `docker-compose.yml`에 `ai-server` 서비스 추가 및 `app`의 `depends_on: [ai-server]` 설정  
+  - `/api/chat`은 `permitAll` 유지, AI가 반환한 상품 ID **순서 보존** 후 DB 조회·응답 조립
+<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/cf4711ba-df64-4eb2-a103-4cac8fa90457" />
 
 ### Prod (AWS)
 - 경로: CloudFront+S3 → Nginx/ALB → EC2(App) → RDS / Redis / Kafka
@@ -100,6 +76,11 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 - **Nginx/ALB**: API 요청을 받아 EC2(App) 인스턴스로 **트래픽 분산** 처리  
 - **BE**: EC2 컨테이너에서 Spring Boot 실행  
 - **DB/캐시/메시징**: 초기엔 EC2+Compose로 시작 → 트래픽 증가 시 **RDS / ElastiCache / MSK**로 확장
+- **AI Server**: EC2(App) → *(내부 통신)* → **EC2(AI, Python FastAPI/Flask)**  
+  - Java 백엔드가 `WebClient`로 AI 서버에 질의 → **추천 상품 ID 리스트** 수신 → DB 조회로 **최종 응답 조립**
+  - 외부 공개 없음(퍼블릭 트래픽 차단), **ALB는 App만 노출**, AI는 **프라이빗 서브넷/보안그룹 허용**으로 내부 호출만
+
+<img width="720" height="360" alt="image" src="https://github.com/user-attachments/assets/70ba72db-81cd-4622-b2dc-6ff00efe4e7a" />
 
 ### 배포 (CI/CD)
 - GitHub Actions로 빌드 → Docker 이미지 푸시 → EC2 자동 배포
@@ -164,7 +145,19 @@ AI 1명, 백엔드 2명, 프론트엔드 2명
 - 기능: 결제 / 취소 / 환불
 - 보안 및 상태 동기화 고려
 
-### 6. 프론트엔드 구조 (Atomic Design)
+### 6. 챗봇 API (AI 서버 연동)
+- Public API(`POST /api/chat`) 제공 → 로그인 없이 이용 가능  
+- `ChatService`: AI 서버 호출 → 상품 DB 조회 → 응답 조립  
+- **순서 보장**: AI 추천 상품 ID 순서를 유지해 DB 결과를 재정렬  
+- `WebClient` 기반 비동기 통신으로 Python AI 서버와 연동  
+- 응답 예시:
+  ```json
+  {
+    "chatbotMessage": "여행갈 때 쓸만한 가방을 추천해드릴게요.",
+    "recommendedProducts": [ ... ]
+  }
+
+### 7. 프론트엔드 구조 (Atomic Design)
 
 ```bash
 src/
@@ -262,6 +255,12 @@ infra/test로 통합 테스트 환경 보조(도커/슬라이스) → 안정적 
 
 9) Sequence Diagram
 <img width="720" height="360" alt="image (11)" src="https://github.com/user-attachments/assets/209e17bc-57bd-407f-ab67-566c14019bc9" />
+
+10) AI 챗봇 실행 화면
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d99f7ddd-29bf-488b-9d3d-aba9edab8537" width="20%" />
+  <img src="https://github.com/user-attachments/assets/95139dc4-0521-48b9-9f1b-e43026b3427c" width="20%" />
+</p>
 
 ---
 
